@@ -180,7 +180,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 
 <header>
   <h1>🌳 شجرة أبناء وأحفاد الشيخ ابو حمد </h1>
-  <p>بمشاركتكم تتزين الشجرة</p>
+  <p>بمشاركتكم تزدان الشجرة</p>
   <div class="header-line"></div>
 </header>
 
@@ -223,7 +223,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
     <h2>🌿 إضافة فرد جديد</h2>
     <div class="form-group">
       <label>الاسم *</label>
-      <input type="text" id="inputName" placeholder="أدخل الاسم الكامل">
+      <input type="text" id="inputName" placeholder="أدخل الاسم الأول">
     </div>
     <div class="form-group">
       <label>الجنس *</label>
@@ -243,15 +243,26 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
       <button class="photo-remove-btn" id="addPhotoRemove" style="display:none" onclick="removePhoto('addPhotoPreview','addPhotoData','addPhotoRemove')">✕ إزالة الصورة</button>
     </div>
     <div class="form-group">
-      <label>الأب (اختياري)</label>
+      <label>الأب <span style="color:#e74c3c">*</span></label>
       <div class="searchable-select" id="fatherSelect">
-        <div class="selected-display" id="fatherDisplay" onclick="toggleSS('fatherSelect')">— بدون أب (جذر الشجرة) —</div>
+        <div class="selected-display" id="fatherDisplay" onclick="toggleSS('fatherSelect')">— اختر الأب —</div>
         <div class="ss-dropdown">
-          <input class="ss-search" id="fatherSearch" placeholder="🔍 ابحث..." oninput="filterSS('fatherSelect','fatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <input class="ss-search" id="fatherSearch" placeholder="🔍 ابحث باسم الأب..." oninput="filterSS('fatherSelect','fatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
           <div id="fatherList"></div>
         </div>
       </div>
       <input type="hidden" id="fatherValue">
+    </div>
+    <div class="form-group">
+      <label>الأم <span style="color:#e74c3c">*</span> <span style="font-size:.72rem;color:#a09050;font-weight:400">(يكفي اختيار أحدهما)</span></label>
+      <div class="searchable-select" id="motherSelect">
+        <div class="selected-display" id="motherDisplay" onclick="toggleSS('motherSelect')">— اختر الأم —</div>
+        <div class="ss-dropdown">
+          <input class="ss-search" id="motherSearch" placeholder="🔍 ابحث باسم الأم..." oninput="filterSS('motherSelect','motherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <div id="motherList"></div>
+        </div>
+      </div>
+      <input type="hidden" id="motherValue">
     </div>
     <div class="modal-actions">
       <button class="btn btn-green"  id="saveBtn" onclick="savePerson()">💾 حفظ</button>
@@ -289,11 +300,22 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
       <div class="searchable-select" id="editFatherSelect">
         <div class="selected-display" id="editFatherDisplay" onclick="toggleSS('editFatherSelect')">— بدون أب —</div>
         <div class="ss-dropdown">
-          <input class="ss-search" id="editFatherSearch" placeholder="🔍 ابحث..." oninput="filterSS('editFatherSelect','editFatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <input class="ss-search" id="editFatherSearch" placeholder="🔍 ابحث باسم الأب..." oninput="filterSS('editFatherSelect','editFatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
           <div id="editFatherList"></div>
         </div>
       </div>
       <input type="hidden" id="editFatherValue">
+    </div>
+    <div class="form-group">
+      <label>الأم</label>
+      <div class="searchable-select" id="editMotherSelect">
+        <div class="selected-display" id="editMotherDisplay" onclick="toggleSS('editMotherSelect')">— بدون أم —</div>
+        <div class="ss-dropdown">
+          <input class="ss-search" id="editMotherSearch" placeholder="🔍 ابحث باسم الأم..." oninput="filterSS('editMotherSelect','editMotherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <div id="editMotherList"></div>
+        </div>
+      </div>
+      <input type="hidden" id="editMotherValue">
     </div>
     <div class="modal-actions">
       <button class="btn btn-gold"   id="editSaveBtn" onclick="saveEdit()">✅ تحديث</button>
@@ -345,7 +367,8 @@ function buildTree(){
   const ch={},roots=[];
   people.forEach(p=>{
     ch[p.id]=ch[p.id]||[];
-    if(p.fatherId){ch[p.fatherId]=ch[p.fatherId]||[];ch[p.fatherId].push(p.id);}
+    const parentId = p.fatherId || p.motherId || null;
+    if(parentId){ch[parentId]=ch[parentId]||[];ch[parentId].push(p.id);}
     else roots.push(p.id);
   });
   Object.keys(ch).forEach(k=>ch[k].sort((a,b)=>{
@@ -434,7 +457,12 @@ function renderTree(){
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
         <div class="node-name">${esc(p.name)}</div>
-        <div class="node-meta">${father?'ابن '+esc(father.name):'🌱 الجذر'}</div>
+        <div class="node-meta">${(()=>{
+          const mother=p.motherId?people.find(q=>q.id===p.motherId):null;
+          if(father) return 'ابن '+esc(father.name);
+          if(mother) return 'ابن '+esc(mother.name);
+          return '🌱 الجذر';
+        })()}</div>
       </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
@@ -453,7 +481,9 @@ function showProfile(id){
     ?`<img class="profile-img" src="${p.photo}">`
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=p.name;
-  document.getElementById('profileMeta').textContent=father?'ابن: '+father.name:'🌱 جذر الشجرة';
+  const mother=p.motherId?people.find(x=>x.id===p.motherId):null;
+  document.getElementById('profileMeta').textContent=father?'الأب: '+father.name:(mother?'الأم: '+mother.name:'🌱 جذر الشجرة');
+  if(father&&mother) document.getElementById('profileMeta').textContent='الأب: '+father.name+' | الأم: '+mother.name;
   document.getElementById('profileMeta2').textContent=childCount?`عدد الأبناء: ${childCount}`:'';
   document.getElementById('profileOverlay').classList.add('open');
 }
@@ -612,17 +642,30 @@ function openAddModal(){
   document.getElementById('btnBoy').classList.add('active');
   document.getElementById('btnGirl').classList.remove('active');
   document.getElementById('fatherValue').value='';
-  document.getElementById('fatherDisplay').textContent='— بدون أب (جذر الشجرة) —';
+  document.getElementById('fatherDisplay').textContent='— اختر الأب —';
+  document.getElementById('fatherDisplay').style.borderColor='';
   document.getElementById('fatherSelect').classList.remove('open');
+  document.getElementById('motherValue').value='';
+  document.getElementById('motherDisplay').textContent='— اختر الأم —';
+  document.getElementById('motherDisplay').style.borderColor='';
+  document.getElementById('motherSelect').classList.remove('open');
   document.getElementById('addPhotoData').value='';
   document.getElementById('addPhotoPreview').innerHTML='📷';
   document.getElementById('addPhotoRemove').style.display='none';
   document.getElementById('photoInput').value='';
-  populateSS('fatherList',getMales(null),'',id=>{
+  populateSS('fatherList', getAllPersons(null, 'father'), '', id=>{
     document.getElementById('fatherValue').value=id;
-    const fnd = people.find(p=>p.id===id);
-    document.getElementById('fatherDisplay').textContent=id?(fnd?fnd.name:''):'— بدون أب (جذر الشجرة) —';
+    const fnd=people.find(p=>p.id===id);
+    document.getElementById('fatherDisplay').textContent=id?(fnd?fnd.name:''):'— اختر الأب —';
+    document.getElementById('fatherDisplay').style.borderColor='';
     document.getElementById('fatherSelect').classList.remove('open');
+  });
+  populateSS('motherList', getAllPersons(null, 'mother'), '', id=>{
+    document.getElementById('motherValue').value=id;
+    const fnd=people.find(p=>p.id===id);
+    document.getElementById('motherDisplay').textContent=id?(fnd?fnd.name:''):'— اختر الأم —';
+    document.getElementById('motherDisplay').style.borderColor='';
+    document.getElementById('motherSelect').classList.remove('open');
   });
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(()=>document.getElementById('inputName').focus(),200);
@@ -639,19 +682,27 @@ function setGender(g){
 async function savePerson(){
   const name=document.getElementById('inputName').value.trim();
   if(!name){showToast('⚠️ الرجاء إدخال الاسم');return;}
+  const fatherId=document.getElementById('fatherValue').value||null;
+  const motherId=document.getElementById('motherValue').value||null;
+  if(!fatherId && !motherId){
+    document.getElementById('fatherDisplay').style.borderColor='#e74c3c';
+    document.getElementById('motherDisplay').style.borderColor='#e74c3c';
+    showToast('⚠️ يجب اختيار الأب أو الأم على الأقل');
+    return;
+  }
   if(!window._dbAddPerson){showToast('❌ Firebase غير مهيأ');return;}
   const btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.innerHTML='⏳ جاري الحفظ…';
   try{
     await window._dbAddPerson({
       name,gender:formGender,
-      fatherId:document.getElementById('fatherValue').value||null,
+      fatherId,motherId,
       photo:document.getElementById('addPhotoData').value||null,
       createdAt:Date.now()
     });
     closeModal();showToast('✅ تم إضافة '+name);
   }catch(e){showToast('❌ خطأ: '+e.message);}
-  btn.disabled=false;btn.innerHTML='💾 حفظ';
+  finally{btn.disabled=false;btn.innerHTML='💾 حفظ';}
 }
 
 /* ══════════════════════════════════
@@ -668,16 +719,26 @@ function openEdit(id){
   document.getElementById('editFatherValue').value=p.fatherId||'';
   document.getElementById('editFatherDisplay').textContent=fp?fp.name:'— بدون أب —';
   document.getElementById('editFatherSelect').classList.remove('open');
+  const mp=p.motherId?people.find(x=>x.id===p.motherId):null;
+  document.getElementById('editMotherValue').value=p.motherId||'';
+  document.getElementById('editMotherDisplay').textContent=mp?mp.name:'— بدون أم —';
+  document.getElementById('editMotherSelect').classList.remove('open');
   document.getElementById('editPhotoData').value=p.photo||'';
   document.getElementById('editPhotoInput').value='';
   const prev=document.getElementById('editPhotoPreview');
   prev.innerHTML=p.photo?`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:'📷';
   document.getElementById('editPhotoRemove').style.display=p.photo?'inline-block':'none';
-  populateSS('editFatherList',getMales(id),p.fatherId||'',nid=>{
+  populateSS('editFatherList', getAllPersons(id,'father'), p.fatherId||'', nid=>{
     document.getElementById('editFatherValue').value=nid;
-    const fnd2 = people.find(q=>q.id===nid);
+    const fnd2=people.find(q=>q.id===nid);
     document.getElementById('editFatherDisplay').textContent=nid?(fnd2?fnd2.name:''):'— بدون أب —';
     document.getElementById('editFatherSelect').classList.remove('open');
+  });
+  populateSS('editMotherList', getAllPersons(id,'mother'), p.motherId||'', nid=>{
+    document.getElementById('editMotherValue').value=nid;
+    const fnd3=people.find(q=>q.id===nid);
+    document.getElementById('editMotherDisplay').textContent=nid?(fnd3?fnd3.name:''):'— بدون أم —';
+    document.getElementById('editMotherSelect').classList.remove('open');
   });
   document.getElementById('editOverlay').classList.add('open');
 }
@@ -700,11 +761,12 @@ async function saveEdit(){
     await window._dbUpdatePerson(editingId,{
       name,gender:editGender,
       fatherId:document.getElementById('editFatherValue').value||null,
+      motherId:document.getElementById('editMotherValue').value||null,
       photo:document.getElementById('editPhotoData').value||null,
     });
     closeEditModal();showToast('✅ تم تحديث البيانات');
   }catch(e){showToast('❌ خطأ: '+e.message);}
-  btn.disabled=false;btn.innerHTML='✅ تحديث';
+  finally{btn.disabled=false;btn.innerHTML='✅ تحديث';}
 }
 
 /* ══════════════════════════════════
@@ -733,23 +795,35 @@ async function clearConfirm(){
    SEARCHABLE SELECT
 ══════════════════════════════════ */
 function getMales(excl){
-  return people.filter(p=>p.gender==='male'&&p.id!==excl)
+  return getAllPersons(excl,'father');
+}
+// Returns list for father (males) or mother (females) dropdowns
+function getAllPersons(excl, role){
+  const gender = role==='mother' ? 'female' : 'male';
+  return people.filter(p=>p.gender===gender && p.id!==excl)
     .sort((a,b)=>a.name.localeCompare(b.name,'ar'))
     .map(p=>{
       const chain=[];let cur=p;
-      for(let i=0;i<4&&cur;i++){chain.push(cur.name);cur=cur.fatherId?people.find(x=>x.id===cur.fatherId):null;}
+      for(let i=0;i<4&&cur;i++){
+        chain.push(cur.name);
+        cur=cur.fatherId?people.find(x=>x.id===cur.fatherId):null;
+      }
       return{id:p.id,name:p.name,sub:chain.slice(1).join(' ← ')};
     });
 }
 const ssCB={};
-function populateSS(listId,males,curId,cb){ssCB[listId]=cb;renderSSItems(listId,males,curId,'');}
-function renderSSItems(listId,males,curId,q){
+function populateSS(listId,persons,curId,cb){ssCB[listId]=cb;renderSSItems(listId,persons,curId,'');}
+function renderSSItems(listId,persons,curId,q){
   const list=document.getElementById(listId);list.innerHTML='';
-  const none=document.createElement('div');none.className='ss-item'+((!curId)?' active':'');
-  none.textContent='— بدون أب (جذر الشجرة) —';none.onclick=()=>{if(ssCB[listId]) ssCB[listId]('');};list.appendChild(none);
+  // Only admin lists (edit modals) get a "none" option
+  const isEditList = listId.startsWith('edit');
+  if(isEditList){
+    const none=document.createElement('div');none.className='ss-item'+((!curId)?' active':'');
+    none.textContent='— بدون —';none.onclick=()=>{if(ssCB[listId]) ssCB[listId]('');};list.appendChild(none);
+  }
   const ql=q.toLowerCase();
-  males.forEach(m=>{
-    if(q&&!m.name.toLowerCase().includes(ql)&&!m.sub.toLowerCase().includes(ql))return;
+  persons.forEach(m=>{
+    if(q&&!m.name.toLowerCase().includes(ql)&&!(m.sub||'').toLowerCase().includes(ql))return;
     const item=document.createElement('div');item.className='ss-item'+(m.id===curId?' active':'');
     item.dataset.id=m.id;
     const ns=document.createElement('span');ns.textContent=m.name;item.appendChild(ns);
@@ -760,14 +834,26 @@ function renderSSItems(listId,males,curId,q){
 function toggleSS(id){
   const w=document.getElementById(id),was=w.classList.contains('open');
   document.querySelectorAll('.searchable-select.open').forEach(el=>el.classList.remove('open'));
-  if(!was){w.classList.add('open');const s=id==='fatherSelect'?'fatherSearch':'editFatherSearch';setTimeout(()=>{const el=document.getElementById(s);if(el){el.value='';el.focus();}},40);}
+  if(!was){
+    w.classList.add('open');
+    const searchMap={
+      fatherSelect:'fatherSearch', motherSelect:'motherSearch',
+      editFatherSelect:'editFatherSearch', editMotherSelect:'editMotherSearch'
+    };
+    const s=searchMap[id]||'fatherSearch';
+    setTimeout(()=>{const el=document.getElementById(s);if(el){el.value='';el.focus();}},40);
+  }
 }
 function filterSS(selectId,searchId){
   const searchEl=document.getElementById(searchId);
   const q=searchEl?searchEl.value.trim():'';
-  const listId=selectId==='fatherSelect'?'fatherList':'editFatherList';
-  const excl=selectId==='editFatherSelect'?editingId:null;
-  renderSSItems(listId,getMales(excl),'',q);
+  let listId, excl=null, role='father';
+  if(selectId==='fatherSelect'){listId='fatherList';role='father';}
+  else if(selectId==='motherSelect'){listId='motherList';role='mother';}
+  else if(selectId==='editFatherSelect'){listId='editFatherList';excl=editingId;role='father';}
+  else if(selectId==='editMotherSelect'){listId='editMotherList';excl=editingId;role='mother';}
+  else{listId='fatherList';}
+  renderSSItems(listId, getAllPersons(excl,role), '', q);
 }
 
 /* ══════════════════════════════════
