@@ -159,6 +159,14 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8)}
 .profile-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 14px;display:block}
 .profile-placeholder{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 14px}
+
+/* ── Lightbox ── */
+.profile-img{cursor:zoom-in}
+.lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;z-index:9000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
+.lightbox-overlay.open{opacity:1;pointer-events:all}
+.lightbox-overlay img{max-width:90vw;max-height:88vh;border-radius:16px;box-shadow:0 0 60px rgba(0,0,0,.8);object-fit:contain;transition:transform .2s;border:2px solid rgba(201,168,76,.3)}
+.lightbox-close{position:fixed;top:18px;left:18px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;backdrop-filter:blur(6px)}
+.lightbox-close:hover{background:rgba(255,255,255,.22)}
 .profile-name{font-family:'Amiri',serif;font-size:1.5rem;color:var(--gold);margin-bottom:4px}
 .profile-meta{font-size:.82rem;color:#a09060;margin-bottom:4px}
 
@@ -180,7 +188,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 
 <header>
   <h1>🌳 شجرة أبناء وأحفاد الشيخ ابو حمد </h1>
-  <p>بمشاركتكم تزدان الشجرة</p>
+  <p>بمشاركتكم تتزين الشجرة</p>
   <div class="header-line"></div>
 </header>
 
@@ -336,6 +344,12 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 
 <div class="toast" id="toast"></div>
 
+<!-- Lightbox -->
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <script>
 /* ══════════════════════════════════
    STATE
@@ -478,7 +492,7 @@ function showProfile(id){
   const father=p.fatherId?people.find(x=>x.id===p.fatherId):null;
   const childCount=people.filter(x=>x.fatherId===id).length;
   document.getElementById('profileImgWrap').innerHTML=p.photo
-    ?`<img class="profile-img" src="${p.photo}">`
+    ?`<img class="profile-img" src="${p.photo}" onclick="openLightbox('${p.photo.replace(/'/g,"\\'")}');event.stopPropagation()" title="اضغط لتكبير الصورة">`
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=p.name;
   const mother=p.motherId?people.find(x=>x.id===p.motherId):null;
@@ -488,6 +502,19 @@ function showProfile(id){
   document.getElementById('profileOverlay').classList.add('open');
 }
 function closeProfile(){document.getElementById('profileOverlay').classList.remove('open');}
+
+function openLightbox(src){
+  const lb=document.getElementById('lightboxOverlay');
+  const img=document.getElementById('lightboxImg');
+  img.src=src;
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightboxOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 
 /* ══════════════════════════════════
    DRAG & DROP
