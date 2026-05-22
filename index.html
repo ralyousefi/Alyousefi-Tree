@@ -514,9 +514,9 @@ function getAncestryLine(person, isFull){
 // Short version for node card (only direct parent)
 function getShortAncestry(person){
   const parentId = person.fatherId || person.motherId;
-  if(!parentId) return '🌱 الجذر';
+  if(!parentId) return '🌱 الاساس';
   const parent = people.find(x=>x.id===parentId);
-  if(!parent) return '🌱 الجذر';
+  if(!parent) return '🌱 الاساس';
   const conn = person.gender==='female' ? 'بنت' : 'ابن';
   // Add grandparent for context
   const gpId = parent.fatherId || parent.motherId;
