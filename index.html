@@ -534,7 +534,7 @@ function showProfile(id){
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=p.name;
   const ancestry=getAncestryLine(p,true);
-  document.getElementById('profileMeta').textContent=ancestry||'🌱 جذر الشجرة';
+  document.getElementById('profileMeta').textContent=ancestry||'الاساس';
   document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء: '+childCount:'';
   document.getElementById('profileOverlay').classList.add('open');
 }
