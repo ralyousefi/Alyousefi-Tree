@@ -471,12 +471,7 @@ function renderTree(){
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
         <div class="node-name">${esc(p.name)}</div>
-        <div class="node-meta">${(()=>{
-          const mother=p.motherId?people.find(q=>q.id===p.motherId):null;
-          if(father) return 'ابن '+esc(father.name);
-          if(mother) return 'ابن '+esc(mother.name);
-          return '🌱 الجذر';
-        })()}</div>
+        <div class="node-meta">${esc(getShortAncestry(p))}</div>
       </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
@@ -487,18 +482,60 @@ function renderTree(){
 /* ══════════════════════════════════
    PROFILE VIEWER
 ══════════════════════════════════ */
+/* ══════════════════════════════════
+   ANCESTRY HELPERS
+══════════════════════════════════ */
+// Returns "ابن/بنت X بن Y بن Z" based on gender and chain
+function getAncestryLine(person, isFull){
+  const parentId = person.fatherId || person.motherId;
+  if(!parentId) return '';
+  // Build chain starting from direct parent
+  const chain = [];
+  let cur = people.find(x=>x.id===parentId);
+  let depth = 0;
+  while(cur && depth < 6){
+    chain.push(cur);
+    const nextId = cur.fatherId || cur.motherId;
+    cur = nextId ? people.find(x=>x.id===nextId) : null;
+    depth++;
+  }
+  if(!chain.length) return '';
+  // First connector depends on this person's gender
+  const firstConn = person.gender==='female' ? 'بنت' : 'ابن';
+  // Subsequent connectors: "بن" for males, "بنت" for females
+  let parts = [firstConn + ' ' + chain[0].name];
+  for(let i=1; i<chain.length; i++){
+    const conn = chain[i-1].gender==='female' ? 'بنت' : 'بن';
+    parts.push(conn + ' ' + chain[i].name);
+  }
+  return parts.join(' ');
+}
+
+// Short version for node card (only direct parent)
+function getShortAncestry(person){
+  const parentId = person.fatherId || person.motherId;
+  if(!parentId) return '🌱 الجذر';
+  const parent = people.find(x=>x.id===parentId);
+  if(!parent) return '🌱 الجذر';
+  const conn = person.gender==='female' ? 'بنت' : 'ابن';
+  // Add grandparent for context
+  const gpId = parent.fatherId || parent.motherId;
+  const gp = gpId ? people.find(x=>x.id===gpId) : null;
+  const gpConn = parent.gender==='female' ? 'بنت' : 'ابن';
+  if(gp) return conn+' '+parent.name+' '+gpConn+' '+gp.name;
+  return conn+' '+parent.name;
+}
+
 function showProfile(id){
   const p=people.find(x=>x.id===id);if(!p)return;
-  const father=p.fatherId?people.find(x=>x.id===p.fatherId):null;
-  const childCount=people.filter(x=>x.fatherId===id).length;
+  const childCount=people.filter(x=>x.fatherId===id||x.motherId===id).length;
   document.getElementById('profileImgWrap').innerHTML=p.photo
-    ?`<img class="profile-img" src="${p.photo}" onclick="openLightbox('${p.photo.replace(/'/g,"\\'")}');event.stopPropagation()" title="اضغط لتكبير الصورة">`
+    ?`<img class="profile-img" src="${p.photo}" onclick="openLightbox(this.src);event.stopPropagation()" title="اضغط لتكبير الصورة">`
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=p.name;
-  const mother=p.motherId?people.find(x=>x.id===p.motherId):null;
-  document.getElementById('profileMeta').textContent=father?'الأب: '+father.name:(mother?'الأم: '+mother.name:'🌱 جذر الشجرة');
-  if(father&&mother) document.getElementById('profileMeta').textContent='الأب: '+father.name+' | الأم: '+mother.name;
-  document.getElementById('profileMeta2').textContent=childCount?`عدد الأبناء: ${childCount}`:'';
+  const ancestry=getAncestryLine(p,true);
+  document.getElementById('profileMeta').textContent=ancestry||'🌱 جذر الشجرة';
+  document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء: '+childCount:'';
   document.getElementById('profileOverlay').classList.add('open');
 }
 function closeProfile(){document.getElementById('profileOverlay').classList.remove('open');}
