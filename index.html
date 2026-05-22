@@ -108,12 +108,12 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .form-group input:focus{outline:none;border-color:var(--gold)}
 
 /* Dynamic Children Fields */
-.child-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; }
+.child-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; background:rgba(255,255,255,.03); padding:8px; border-radius:10px; border:1px solid rgba(201,168,76,.15); }
 .child-row input, .child-row select { background: rgba(255,255,255,.06); border: 1px solid rgba(201,168,76,.22); border-radius: 8px; padding: 7px; color: #f5e8c8; font-family: 'Cairo', sans-serif; font-size: .8rem; }
 .child-row .child-name { flex: 2; min-width: 100px; }
 .child-row .child-family { flex: 1.5; min-width: 90px; }
 .child-row .child-gender { flex: 1; min-width: 70px; }
-.child-del { background: #e74c3c; color: #fff; border: none; border-radius: 8px; width: 32px; height: 34px; cursor: pointer; flex-shrink: 0; }
+.child-del { background: #e74c3c; color: #fff; border: none; border-radius: 8px; width: 32px; height: 34px; cursor: pointer; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
 .btn-small { padding: 6px 14px; font-size: .75rem; margin-top: 4px; }
 
 /* Photo */
@@ -369,9 +369,6 @@ const NW=116, NH=128, HG=14, VG=60, TP=28;
 /* ══════════════════════════════════
    ANCESTRY & DISPLAY LOGIC
 ══════════════════════════════════ */
-
-// فحص هل الشخص من نسل الأبناء للجد الأكبر (سليمان)
-// إذا كان هناك أم في السلسلة، فهو من نسل البنات وسيرجع false
 function isYousefiLine(personId) {
   if(!personId) return true;
   const p = people.find(x => x.id === personId);
@@ -381,15 +378,12 @@ function isYousefiLine(personId) {
   return true;
 }
 
-// دالة لمعرفة الاسم الظاهر (مع العائلة)
 function getDisplayName(p) {
-  if(p.familyName) return p.name + ' ' + p.familyName; // إذا كُتبت عائلة محددة
-  if(isYousefiLine(p.id)) return p.name + ' اليوسفي'; // إذا كان من نسل الأبناء للجد
-  return p.name; // نسل البنات إذا لم يكتبوا العائلة
+  if(p.familyName) return p.name + ' ' + p.familyName; 
+  if(isYousefiLine(p.id)) return p.name + ' اليوسفي'; 
+  return p.name; 
 }
 
-// دالة لمعرفة سلسلة النسب كاملة 
-// النتيجة مثال: جوري بنت ريان بن عبدالعزيز بن سليمان
 function getAncestryLine(person) {
   const parentId = person.fatherId || person.motherId;
   if(!parentId) return '🌱 الأساس';
@@ -497,7 +491,6 @@ function renderTree(){
       ?`<img class="node-photo" src="${p.photo}" loading="lazy">`
       :`<div class="node-photo-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
     
-    // إنشاء البطاقة مع الاسم الكامل وسلسلة النسب
     wrap.innerHTML=`
       ${isAdmin?`<div class="node-actions">
         <button class="act-btn act-edit"   onclick="event.stopPropagation();openEdit('${p.id}')">✏️</button>
@@ -541,6 +534,40 @@ function closeLightbox(){
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 
 /* ══════════════════════════════════
+   PHOTO HELPERS
+══════════════════════════════════ */
+function handlePhoto(input,prevId,dataId){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    document.getElementById(dataId).value=dataUrl;
+    const prev=document.getElementById(prevId);
+    prev.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    const rid=dataId==='addPhotoData'?'addPhotoRemove':'editPhotoRemove';
+    document.getElementById(rid).style.display='inline-block';
+  };
+  reader.readAsDataURL(file);input.value='';
+}
+function removePhoto(prevId,dataId,removeId){
+  document.getElementById(dataId).value='';
+  document.getElementById(prevId).innerHTML='📷';
+  document.getElementById(removeId).style.display='none';
+}
+
+function handleChildPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    const wrapper=input.closest('.child-photo-wrapper');
+    wrapper.querySelector('.child-photo-data').value=dataUrl;
+    wrapper.querySelector('.child-photo-prev').innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };
+  reader.readAsDataURL(file);input.value='';
+}
+
+/* ══════════════════════════════════
    ADD MODAL LOGIC 
 ══════════════════════════════════ */
 function addChildField() {
@@ -548,6 +575,11 @@ function addChildField() {
   const div = document.createElement('div');
   div.className = 'child-row';
   div.innerHTML = `
+    <div class="child-photo-wrapper" style="position:relative; width:34px; height:34px; flex-shrink:0; cursor:pointer;" onclick="this.querySelector('input[type=file]').click()" title="إضافة صورة للابن">
+      <div class="child-photo-prev" style="width:100%; height:100%; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid rgba(201,168,76,.4); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:.8rem;">📷</div>
+      <input type="file" accept="image/*" style="display:none" onchange="handleChildPhoto(this)">
+      <input type="hidden" class="child-photo-data">
+    </div>
     <input type="text" placeholder="الاسم الأول" class="child-name">
     <select class="child-gender">
       <option value="male">ذكر</option>
@@ -563,7 +595,7 @@ function openAddModal(){
   formGender='male';
   document.getElementById('inputName').value='';
   document.getElementById('inputFamilyName').value='';
-  document.getElementById('childrenList').innerHTML=''; // تصفية قائمة الأبناء
+  document.getElementById('childrenList').innerHTML='';
   document.getElementById('btnBoy').classList.add('active');
   document.getElementById('btnGirl').classList.remove('active');
   document.getElementById('fatherValue').value='';
@@ -627,7 +659,6 @@ async function savePerson(){
   btn.disabled=true;btn.innerHTML='⏳ جاري الحفظ…';
   
   try{
-    // حفظ الفرد الأساسي أولاً للحصول على رقمه (ID)
     const docRef = await window._dbAddPerson({
       name,
       gender:formGender,
@@ -639,22 +670,21 @@ async function savePerson(){
     
     const newPersonId = docRef.id;
 
-    // حفظ الأبناء المضافين إن وجدوا
     const childRows = document.querySelectorAll('.child-row');
     for(const row of childRows){
        const cName = row.querySelector('.child-name').value.trim();
        const cFamily = row.querySelector('.child-family').value.trim();
        const cGender = row.querySelector('.child-gender').value;
+       const cPhoto = row.querySelector('.child-photo-data').value || null;
 
        if(cName) {
          await window._dbAddPerson({
            name: cName,
            gender: cGender,
            familyName: cFamily || null,
-           // إذا كان الأساسي ذكر فهو الأب، وإذا كانت أنثى فهي الأم
            fatherId: formGender === 'male' ? newPersonId : null,
            motherId: formGender === 'female' ? newPersonId : null,
-           photo: null,
+           photo: cPhoto,
            createdAt: Date.now()
          });
        }
@@ -794,7 +824,7 @@ async function onDragEnd(e){
       if(nfid!==dragState.id&&!isDescendant(dragState.id,nfid)){
         const np = people.find(x=>x.id===nfid);
         if(np.gender==='male') await window._dbUpdateFather(dragState.id,nfid);
-        else await window._dbUpdateMother(dragState.id,nfid); // Update Mother instead of father if dropped on female
+        else await window._dbUpdateMother(dragState.id,nfid);
         showToast('✅ تم تغيير النسب');
       }else showToast('⚠️ لا يمكن جعل الأب ابناً له');
     }
@@ -824,25 +854,6 @@ function isDescendant(ancId,testId){
     return chk(p.fatherId) || chk(p.motherId);
   }
   return chk(testId);
-}
-
-function handlePhoto(input,prevId,dataId){
-  const file=input.files[0];if(!file)return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const dataUrl=e.target.result;
-    document.getElementById(dataId).value=dataUrl;
-    const prev=document.getElementById(prevId);
-    prev.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-    const rid=dataId==='addPhotoData'?'addPhotoRemove':'editPhotoRemove';
-    document.getElementById(rid).style.display='inline-block';
-  };
-  reader.readAsDataURL(file);input.value='';
-}
-function removePhoto(prevId,dataId,removeId){
-  document.getElementById(dataId).value='';
-  document.getElementById(prevId).innerHTML='📷';
-  document.getElementById(removeId).style.display='none';
 }
 
 function toggleAdmin(){
@@ -998,7 +1009,6 @@ function startListener(){
   );
 }
 
-// تعديل هذه الدالة بالذات لترجع النتيجة المطلوبة في عملية الإضافة المزدوجة
 window._dbAddPerson = async (data) => {
   const docRef = await addDoc(collection(db,'people'), data);
   return docRef;
