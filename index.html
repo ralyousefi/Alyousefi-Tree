@@ -53,13 +53,57 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .status-ok{color:#2ecc71}
 .status-error{color:#e74c3c}
 
-/* ── Tree canvas ── */
-.tree-section{padding:10px 8px 80px;overflow-x:auto;overflow-y:visible}
-.tree-canvas{display:inline-block;min-width:100%;position:relative}
+/* ── Tree canvas (Map Mode) ── */
+.tree-section {
+  padding: 0;
+  margin: 10px 16px 80px;
+  overflow: hidden; /* Hide scrollbars for pan/zoom */
+  background: radial-gradient(ellipse at center, rgba(17,32,10,0.4) 0%, rgba(7,13,4,0.6) 100%);
+  border: 1px solid rgba(201,168,76,.15);
+  border-radius: 16px;
+  height: calc(100vh - 240px);
+  min-height: 450px;
+  position: relative;
+  touch-action: none; /* Crucial for touch panning */
+  cursor: grab;
+  direction: ltr; /* Keep math consistent */
+}
+.tree-section:active { cursor: grabbing; }
+
+.tree-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  pointer-events: none; /* Let empty space drag fall through */
+}
 .tree-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 
+/* Zoom Controls */
+.zoom-tools {
+  position: absolute;
+  top: 16px; left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+}
+.zoom-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: rgba(20,36,10,.85);
+  border: 1px solid rgba(201,168,76,.3);
+  color: var(--gold);
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.zoom-btn:hover { background: var(--gold); color: #000; }
+
 /* ── Node ── */
-.node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s}
+.node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s; pointer-events: auto; direction: rtl;}
 .node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(201,168,76,.7));transition:none}
 .node-wrap.drag-target .node-card{box-shadow:0 0 0 3px var(--gold),0 0 20px rgba(201,168,76,.5)!important}
 
@@ -92,7 +136,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;display:none}
 
 /* Empty */
-.empty-state{text-align:center;padding:60px 20px;color:#5a7850}
+.empty-state{text-align:center;padding:60px 20px;color:#5a7850; pointer-events:auto;}
 .empty-state .tree-icon{font-size:4rem;margin-bottom:12px;opacity:.4}
 .empty-state p{font-size:.95rem;line-height:1.9}
 
@@ -174,8 +218,6 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);border-radius:3px}
 @media(max-width:480px){.node-card{width:96px;min-height:110px}.node-photo,.node-photo-placeholder{width:50px;height:50px}}
 </style>
 </head>
@@ -201,6 +243,12 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 <div class="drag-info" id="dragInfo">✋ اسحب ورقة وأفلتها فوق أب آخر لتغيير النسب</div>
 
 <div class="tree-section" id="treeSection">
+  <div class="zoom-tools">
+    <button class="zoom-btn" onclick="mapZoomIn()" title="تكبير">➕</button>
+    <button class="zoom-btn" onclick="mapZoomOut()" title="تصغير">➖</button>
+    <button class="zoom-btn" onclick="mapZoomFit()" title="احتواء الشاشة">⛶</button>
+  </div>
+  
   <div class="tree-canvas" id="treeCanvas">
     <svg class="tree-svg" id="treeSvg"></svg>
   </div>
@@ -355,6 +403,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 let people=[], isAdmin=false, editingId=null;
 let formGender='male', editGender='male';
 let nodePos={};
+let firstRender = true;
 
 function setStatus(msg,type){
   const bar=document.getElementById('statusBar');
@@ -365,6 +414,136 @@ function setStatus(msg,type){
 }
 
 const NW=116, NH=128, HG=14, VG=60, TP=28;
+
+/* ══════════════════════════════════
+   MAP ZOOM & PAN LOGIC (NEW)
+══════════════════════════════════ */
+let mapScale = 1, mapPanX = 0, mapPanY = 0;
+let isPanning = false, startPanX = 0, startPanY = 0;
+
+function initMapLogic() {
+  const ts = document.getElementById('treeSection');
+  
+  // Mouse Drag Panning
+  ts.addEventListener('mousedown', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    isPanning = true;
+    startPanX = e.clientX - mapPanX;
+    startPanY = e.clientY - mapPanY;
+    ts.style.cursor = 'grabbing';
+  });
+  
+  window.addEventListener('mouseup', () => {
+    isPanning = false;
+    ts.style.cursor = 'grab';
+  });
+  
+  window.addEventListener('mousemove', e => {
+    if(!isPanning) return;
+    e.preventDefault();
+    mapPanX = e.clientX - startPanX;
+    mapPanY = e.clientY - startPanY;
+    updateMapTransform();
+  });
+  
+  // Mouse Wheel Zoom
+  ts.addEventListener('wheel', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newScale = Math.max(0.1, Math.min(mapScale + delta, 3));
+    
+    const rect = ts.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    
+    mapPanX = offsetX - (offsetX - mapPanX) * (newScale / mapScale);
+    mapPanY = offsetY - (offsetY - mapPanY) * (newScale / mapScale);
+    mapScale = newScale;
+    updateMapTransform();
+  }, {passive: false});
+  
+  // Touch Events (Pinch to Zoom & Drag to Pan)
+  let initialDist = 0, initialScale = 1;
+  ts.addEventListener('touchstart', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    if(e.touches.length === 1) {
+      isPanning = true;
+      startPanX = e.touches[0].clientX - mapPanX;
+      startPanY = e.touches[0].clientY - mapPanY;
+    } else if(e.touches.length === 2) {
+      isPanning = false;
+      initialDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      initialScale = mapScale;
+    }
+  }, {passive: false});
+  
+  window.addEventListener('touchmove', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    if(isPanning && e.touches.length === 1) {
+      e.preventDefault();
+      mapPanX = e.touches[0].clientX - startPanX;
+      mapPanY = e.touches[0].clientY - startPanY;
+      updateMapTransform();
+    } else if(e.touches.length === 2 && initialDist) {
+      e.preventDefault();
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const newScale = Math.max(0.1, Math.min(initialScale * (dist / initialDist), 3));
+      
+      const rect = ts.getBoundingClientRect();
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX)/2 - rect.left;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY)/2 - rect.top;
+      
+      mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
+      mapPanY = centerY - (centerY - mapPanY) * (newScale / mapScale);
+      mapScale = newScale;
+      updateMapTransform();
+    }
+  }, {passive: false});
+  
+  window.addEventListener('touchend', e => {
+    if(e.touches.length < 2) initialDist = 0;
+    if(e.touches.length === 0) isPanning = false;
+  });
+}
+
+function updateMapTransform() {
+  const tc = document.getElementById('treeCanvas');
+  tc.style.transform = `translate(${mapPanX}px, ${mapPanY}px) scale(${mapScale})`;
+}
+
+function mapZoomIn() {
+  const ts = document.getElementById('treeSection');
+  const newScale = Math.min(mapScale + 0.2, 3);
+  const centerX = ts.clientWidth / 2;
+  const centerY = ts.clientHeight / 2;
+  mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
+  mapPanY = centerY - (centerY - mapPanY) * (newScale / mapScale);
+  mapScale = newScale;
+  updateMapTransform();
+}
+
+function mapZoomOut() {
+  const ts = document.getElementById('treeSection');
+  const newScale = Math.max(mapScale - 0.2, 0.1);
+  const centerX = ts.clientWidth / 2;
+  const centerY = ts.clientHeight / 2;
+  mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
+  mapPanY = centerY - (centerY - mapPanY) * (newScale / mapScale);
+  mapScale = newScale;
+  updateMapTransform();
+}
+
+function mapZoomFit() {
+  const {canvasW, canvasH} = buildTree();
+  const ts = document.getElementById('treeSection');
+  const sX = ts.clientWidth / (canvasW + 60);
+  const sY = ts.clientHeight / (canvasH + 60);
+  mapScale = Math.min(sX, sY, 1.2); 
+  mapPanX = (ts.clientWidth - canvasW * mapScale) / 2;
+  mapPanY = 40; 
+  updateMapTransform();
+}
 
 /* ══════════════════════════════════
    ANCESTRY & DISPLAY LOGIC
@@ -455,7 +634,6 @@ function renderTree(){
   svg.innerHTML='';nodePos={};
 
   if(!people.length){
-    canvas.style.width='100%';canvas.style.height='260px';
     canvas.innerHTML=`<svg class="tree-svg" id="treeSvg"></svg>
       <div class="empty-state" style="padding-top:60px">
         <div class="tree-icon">🌱</div>
@@ -505,6 +683,11 @@ function renderTree(){
     if(isAdmin)attachDrag(wrap);
     canvas.appendChild(wrap);
   });
+  
+  if (firstRender) {
+    mapZoomFit();
+    firstRender = false;
+  }
 }
 
 function showProfile(id){
@@ -836,7 +1019,8 @@ async function onDragEnd(e){
 }
 function getDropTarget(cx,cy,excl){
   const rect=document.getElementById('treeCanvas').getBoundingClientRect();
-  const lx=cx-rect.left,ly=cy-rect.top;
+  // تعديل الإحداثيات هنا لتتوافق مع نسبة التكبير (الزوم)
+  const lx=(cx-rect.left)/mapScale, ly=(cy-rect.top)/mapScale;
   for(const[id,p]of Object.entries(nodePos)){
     if(id===excl)continue;
     if(lx>=p.x-NW/2&&lx<=p.x+NW/2&&ly>=p.y&&ly<=p.y+NH)
@@ -965,6 +1149,9 @@ document.addEventListener('click',e=>{
 });
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
 document.getElementById('editOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('editOverlay'))closeEditModal();});
+
+// تهيئة محرك الخريطة عند تحميل الصفحة
+initMapLogic();
 </script>
 
 <script type="module">
