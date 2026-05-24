@@ -149,7 +149,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .modal h2{font-family:'Amiri',serif;color:var(--gold);font-size:1.35rem;margin-bottom:14px;text-align:center}
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-size:.8rem;color:var(--gold-light);margin-bottom:4px;font-weight:700}
-.form-group input[type=text]{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:9px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.88rem}
+.form-group input[type=text], .form-group input[type=number] {width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:9px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.88rem}
 .form-group input:focus{outline:none;border-color:var(--gold)}
 
 /* Dynamic Children Fields */
@@ -381,6 +381,20 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
   </div>
 </div>
 
+<div class="modal-overlay" id="orderChildrenOverlay">
+  <div class="modal" style="max-width:380px;">
+    <h2>🔢 ترتيب الأبناء</h2>
+    <p style="font-size:0.8rem; color:#a09060; margin-bottom:14px; text-align:center;">
+      أدخل رقم الترتيب لكل ابن (1 هو الأصغر ويكون في اليمين، وكلما زاد الرقم يتجه لليسار)
+    </p>
+    <div id="orderChildrenList" style="max-height:50vh; overflow-y:auto; margin-bottom:16px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" id="saveOrderBtn" onclick="saveChildrenOrder()">💾 حفظ الترتيب</button>
+      <button class="btn btn-cancel" onclick="closeOrderChildren()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <div class="profile-overlay" id="profileOverlay" onclick="closeProfile()">
   <div class="profile-card" onclick="event.stopPropagation()">
     <div id="profileImgWrap"></div>
@@ -388,7 +402,9 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
     <div class="profile-meta"  id="profileMeta" style="font-weight:700; color:#e8c97a"></div>
     <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:#a09060"></div>
     
-    <button class="btn btn-gold" id="exportSubBtn" style="margin-top:18px;width:100%;justify-content:center;display:none;" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
+    <button class="btn btn-blue" id="orderChildrenBtn" style="margin-top:18px;width:100%;justify-content:center;display:none; background:linear-gradient(135deg,#3498db,#2980b9);" onclick="openOrderChildren()">🔢 ترتيب الأبناء</button>
+    
+    <button class="btn btn-gold" id="exportSubBtn" style="margin-top:8px;width:100%;justify-content:center;display:none;" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
     <button class="btn btn-cancel" style="margin-top:8px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
   </div>
 </div>
@@ -594,6 +610,61 @@ function getAncestryLine(person) {
 }
 
 /* ══════════════════════════════════
+   ORDERING CHILDREN (ترتيب الأبناء)
+══════════════════════════════════ */
+function openOrderChildren() {
+  const parentId = currentProfileId;
+  if (!parentId) return;
+  
+  // جلب الأبناء وترتيبهم مبدئياً تصاعدياً حسب رقم الترتيب 
+  const kids = people.filter(x => x.fatherId === parentId || x.motherId === parentId)
+                     .sort((a, b) => (a.order || 0) - (b.order || 0));
+                     
+  const listDiv = document.getElementById('orderChildrenList');
+  listDiv.innerHTML = '';
+  
+  kids.forEach(k => {
+    listDiv.innerHTML += `
+      <div class="child-order-row" style="display:flex; gap:10px; align-items:center; margin-bottom:10px; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+        <span style="flex:1; color:#f5e8c8; font-size:0.9rem; font-weight:600;">${getDisplayName(k)}</span>
+        <input type="number" class="child-order-input" data-id="${k.id}" value="${k.order || 0}" style="width:70px; padding:6px; border-radius:6px; text-align:center; background:rgba(0,0,0,0.3); color:var(--gold); border:1px solid rgba(201,168,76,0.4); font-weight:bold;">
+      </div>
+    `;
+  });
+  
+  closeProfile();
+  document.getElementById('orderChildrenOverlay').classList.add('open');
+}
+
+function closeOrderChildren() {
+  document.getElementById('orderChildrenOverlay').classList.remove('open');
+}
+
+async function saveChildrenOrder() {
+  if (!isAdmin) return;
+  const btn = document.getElementById('saveOrderBtn');
+  btn.disabled = true; btn.innerHTML = '⏳ جاري الحفظ...';
+  
+  try {
+    const inputs = document.querySelectorAll('.child-order-input');
+    const promises = [];
+    inputs.forEach(inp => {
+       const id = inp.dataset.id;
+       const order = parseInt(inp.value) || 0;
+       promises.push(window._dbUpdatePerson(id, { order: order }));
+    });
+    
+    await Promise.all(promises);
+    closeOrderChildren();
+    showToast('✅ تم حفظ الترتيب بنجاح');
+  } catch(e) {
+    showToast('❌ خطأ في الحفظ: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.innerHTML = '💾 حفظ الترتيب';
+  }
+}
+
+/* ══════════════════════════════════
    TREE BUILDER (BOTTOM-UP LOGIC)
 ══════════════════════════════════ */
 function buildTree(focusRootId = null){
@@ -622,12 +693,18 @@ function buildTree(focusRootId = null){
     }
   });
 
+  // ترتيب الأبناء: تنازلياً بحيث يكون صاحب الرقم الأصغر في اليمين (الآخر في المصفوفة)
   Object.keys(ch).forEach(k=>ch[k].sort((a,b)=>{
-    const pa=people.find(x=>x.id===a),pb=people.find(x=>x.id===b);
+    const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
+    const diff = (pb.order || 0) - (pa.order || 0);
+    if(diff !== 0) return diff;
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   }));
+  
   roots.sort((a,b)=>{
-    const pa=people.find(x=>x.id===a),pb=people.find(x=>x.id===b);
+    const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
+    const diff = (pb.order || 0) - (pa.order || 0);
+    if(diff !== 0) return diff;
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   });
 
@@ -786,7 +863,7 @@ function showProfile(id){
   document.getElementById('profileMeta').textContent=getAncestryLine(p);
   document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء في الشجرة: '+childCount:'';
   
-  // إظهار زر التصدير في البروفايل فقط لوضع الإدارة
+  document.getElementById('orderChildrenBtn').style.display = (isAdmin && childCount > 0) ? 'inline-flex' : 'none';
   document.getElementById('exportSubBtn').style.display = isAdmin ? 'inline-flex' : 'none';
 
   document.getElementById('profileOverlay').classList.add('open');
@@ -937,6 +1014,7 @@ async function savePerson(){
       gender:formGender,
       familyName: familyName || null,
       fatherId, motherId,
+      order: 0, // إضافة قيمة مبدئية للترتيب
       photo:document.getElementById('addPhotoData').value||null,
       createdAt:Date.now()
     });
@@ -957,6 +1035,7 @@ async function savePerson(){
            familyName: cFamily || null,
            fatherId: formGender === 'male' ? newPersonId : null,
            motherId: formGender === 'female' ? newPersonId : null,
+           order: 0,
            photo: cPhoto,
            createdAt: Date.now()
          });
@@ -1137,7 +1216,7 @@ function toggleAdmin(){
       document.getElementById('adminBtn').textContent='🔓 إيقاف الإدارة';
       document.getElementById('adminBadge').style.display='block';
       document.getElementById('clearBtn').style.display='inline-flex';
-      document.getElementById('exportBtn').style.display='inline-flex'; // إظهار زر التصدير
+      document.getElementById('exportBtn').style.display='inline-flex';
       document.getElementById('dragInfo').classList.add('show');
       showToast('✅ تم تفعيل وضع الإدارة');
       renderTree();
@@ -1147,7 +1226,7 @@ function toggleAdmin(){
     document.getElementById('adminBtn').textContent='🔐 وضع الإدارة';
     document.getElementById('adminBadge').style.display='none';
     document.getElementById('clearBtn').style.display='none';
-    document.getElementById('exportBtn').style.display='none'; // إخفاء زر التصدير
+    document.getElementById('exportBtn').style.display='none'; 
     document.getElementById('dragInfo').classList.remove('show');
     renderTree();
   }
