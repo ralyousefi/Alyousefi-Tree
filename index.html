@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>شجرة أبناء وأحفاد الشيخ ابو حمد </title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
   const FIREBASE_CONFIG = {
@@ -196,7 +197,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 /* Profile */
 .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
 .profile-overlay.open{opacity:1;pointer-events:all}
-.profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8)}
+.profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8); max-height:90vh; overflow-y:auto;}
 .profile-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 14px;display:block}
 .profile-placeholder{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 14px}
 
@@ -233,9 +234,10 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 <div class="status-bar" id="statusBar"></div>
 
 <div class="admin-bar">
+  <button class="btn btn-blue"  onclick="exportTree()">📸 تصوير الشجرة كاملة</button>
   <button class="btn btn-green" onclick="openAddModal()">＋ إضافة فرد وأبنائه</button>
   <button class="btn btn-gold"  onclick="toggleAdmin()" id="adminBtn">🔐 وضع الإدارة</button>
-  <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none">🗑 مسح الكل</button>
+  <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none; background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 مسح الكل</button>
 </div>
 <div class="admin-badge" id="adminBadge">
   <span>✅ وضع الإدارة — ✏️ تعديل أو اسحب ورقة لتغيير النسب</span>
@@ -383,9 +385,11 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
   <div class="profile-card" onclick="event.stopPropagation()">
     <div id="profileImgWrap"></div>
     <div class="profile-name"  id="profileName"></div>
-    <div class="profile-meta"  id="profileMeta"></div>
-    <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:var(--gold-light)"></div>
-    <button class="btn btn-cancel" style="margin-top:14px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
+    <div class="profile-meta"  id="profileMeta" style="font-weight:700; color:#e8c97a"></div>
+    <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:#a09060"></div>
+    
+    <button class="btn btn-gold" style="margin-top:18px;width:100%;justify-content:center" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
+    <button class="btn btn-cancel" style="margin-top:8px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
   </div>
 </div>
 
@@ -400,7 +404,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 /* ══════════════════════════════════
    STATE & DATA
 ══════════════════════════════════ */
-let people=[], isAdmin=false, editingId=null;
+let people=[], isAdmin=false, editingId=null, currentProfileId=null;
 let formGender='male', editGender='male';
 let nodePos={};
 let firstRender = true;
@@ -413,7 +417,7 @@ function setStatus(msg,type){
   }
 }
 
-const NW=116, NH=128, HG=14, VG=60, TP=28;
+const NW=116, NH=128, HG=18, VG=60, TP=28;
 
 /* ══════════════════════════════════
    MAP ZOOM & PAN LOGIC
@@ -531,14 +535,19 @@ function mapZoomOut() {
   updateMapTransform();
 }
 
-function mapZoomFit() {
-  const {canvasW, canvasH} = buildTree();
+function mapZoomFit(forcedCanvasW=null, forcedCanvasH=null) {
+  let cw = forcedCanvasW, ch = forcedCanvasH;
+  if (!cw || !ch) {
+    const calc = buildTree();
+    cw = calc.canvasW; ch = calc.canvasH;
+  }
   const ts = document.getElementById('treeSection');
-  const sX = ts.clientWidth / (canvasW + 60);
-  const sY = ts.clientHeight / (canvasH + 60);
-  mapScale = Math.min(sX, sY, 1.2); 
-  mapPanX = (ts.clientWidth - canvasW * mapScale) / 2;
-  mapPanY = 40; 
+  const sX = ts.clientWidth / (cw + 60);
+  const sY = ts.clientHeight / (ch + 60);
+  mapScale = Math.min(sX, sY, 1.1); 
+  mapPanX = (ts.clientWidth - cw * mapScale) / 2;
+  // التوسيط العمودي ليكون بالمنتصف تماماً
+  mapPanY = Math.max(20, (ts.clientHeight - ch * mapScale) / 2); 
   updateMapTransform();
 }
 
@@ -561,10 +570,7 @@ function getDisplayName(p) {
 }
 
 function getAncestryLine(person) {
-  // إذا لم يكن من نسل اليوسفي (أي تم تحديد اسم عائلة له أو لأحد آبائه من جهة الأم)
-  if(!isYousefiLine(person.id)) {
-    return ''; // يرجع نص فارغ (لا يظهر سلسلة النسب)
-  }
+  if(!isYousefiLine(person.id)) return '';
 
   const parentId = person.fatherId || person.motherId;
   if(!parentId) return '🌱 الأساس';
@@ -589,16 +595,35 @@ function getAncestryLine(person) {
 }
 
 /* ══════════════════════════════════
-   TREE BUILDER
+   TREE BUILDER (BOTTOM-UP LOGIC)
 ══════════════════════════════════ */
-function buildTree(){
-  const ch={},roots=[];
+function buildTree(focusRootId = null){
+  const ch={}, roots=[];
+  
+  // فلترة النسل في حال التصوير لنسل محدد
+  let validNodes = new Set();
+  if(focusRootId) {
+    function addSub(id) {
+      validNodes.add(id);
+      people.filter(x => x.fatherId === id || x.motherId === id).forEach(child => addSub(child.id));
+    }
+    addSub(focusRootId);
+  }
+
   people.forEach(p=>{
+    if(focusRootId && !validNodes.has(p.id)) return;
+
     ch[p.id]=ch[p.id]||[];
     const parentId = p.fatherId || p.motherId || null;
-    if(parentId){ch[parentId]=ch[parentId]||[];ch[parentId].push(p.id);}
-    else roots.push(p.id);
+    
+    if(parentId && (!focusRootId || validNodes.has(parentId))){
+        ch[parentId]=ch[parentId]||[];
+        ch[parentId].push(p.id);
+    } else {
+        roots.push(p.id);
+    }
   });
+
   Object.keys(ch).forEach(k=>ch[k].sort((a,b)=>{
     const pa=people.find(x=>x.id===a),pb=people.find(x=>x.id===b);
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
@@ -607,6 +632,7 @@ function buildTree(){
     const pa=people.find(x=>x.id===a),pb=people.find(x=>x.id===b);
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   });
+
   const sw={};
   function calcW(id){
     const c=ch[id]||[];
@@ -615,7 +641,9 @@ function buildTree(){
     sw[id]=Math.max(NW,t);return sw[id];
   }
   roots.forEach(r=>calcW(r));
+  
   const pos={};
+  // البناء المبدئي (من الأعلى للأسفل)
   function place(id,x,y){
     const c=ch[id]||[];pos[id]={x,y};
     if(!c.length)return;
@@ -624,12 +652,21 @@ function buildTree(){
     c.forEach(cid=>{place(cid,cx+sw[cid]/2,y+NH+VG);cx+=sw[cid]+HG;});
   }
   let off=0;roots.forEach(r=>{place(r,off+sw[r]/2,TP);off+=sw[r]+HG;});
-  let mx=0,my=0;
-  Object.values(pos).forEach(({x,y})=>{if(x+NW/2>mx)mx=x+NW/2;if(y+NH>my)my=y+NH;});
-  return{pos,ch,canvasW:mx+20,canvasH:my+40};
+
+  // قلب الإحداثيات لتبدأ من الأسفل للأعلى
+  let maxDepthY = 0;
+  Object.values(pos).forEach(({y}) => { if(y > maxDepthY) maxDepthY = y; });
+  Object.values(pos).forEach(p => { 
+    p.y = maxDepthY - p.y + TP; 
+  });
+
+  let mx=0, my=maxDepthY + NH + TP;
+  Object.values(pos).forEach(({x})=>{if(x+NW/2>mx)mx=x+NW/2;});
+  
+  return{pos, ch, canvasW:mx+20, canvasH:my+20};
 }
 
-function renderTree(){
+function renderTree(focusRootId = null){
   const canvas=document.getElementById('treeCanvas');
   const svg=document.getElementById('treeSvg');
   Array.from(canvas.children).forEach(el=>{if(el!==svg)el.remove();});
@@ -643,25 +680,31 @@ function renderTree(){
       </div>`;
     return;
   }
-  const{pos,ch,canvasW,canvasH}=buildTree();
+  
+  const{pos,ch,canvasW,canvasH}=buildTree(focusRootId);
   canvas.style.width=canvasW+'px';canvas.style.height=canvasH+'px';
 
+  // رسم الخطوط (من أعلى الأب إلى أسفل الابن)
   people.forEach(p=>{
+    if(!pos[p.id]) return;
     const c=ch[p.id]||[];if(!c.length)return;
-    const px=pos[p.id].x,py=pos[p.id].y+NH;
+    const px=pos[p.id].x, py=pos[p.id].y; 
     c.forEach(cid=>{
-      const cx=pos[cid].x,cy=pos[cid].y,midY=py+VG/2;
+      if(!pos[cid]) return;
+      const cx=pos[cid].x, cy=pos[cid].y + NH; 
+      const midY = py - VG/2; 
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
       path.setAttribute('d',`M${px},${py} L${px},${midY} L${cx},${midY} L${cx},${cy}`);
       path.setAttribute('fill','none');
-      path.setAttribute('stroke','rgba(201,168,76,0.4)');
-      path.setAttribute('stroke-width','1.5');
-      path.setAttribute('stroke-dasharray','4,3');
+      path.setAttribute('stroke','rgba(201,168,76,0.5)');
+      path.setAttribute('stroke-width','2');
       svg.appendChild(path);
     });
   });
 
+  // رسم البطاقات
   people.forEach(p=>{
+    if(!pos[p.id]) return;
     const{x,y}=pos[p.id];nodePos[p.id]={x,y,w:NW,h:NH};
     const wrap=document.createElement('div');
     wrap.className='node-wrap';wrap.dataset.id=p.id;
@@ -671,6 +714,9 @@ function renderTree(){
       ?`<img class="node-photo" src="${p.photo}" loading="lazy">`
       :`<div class="node-photo-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
     
+    // إخفاء النص الطويل من الشجرة، والاكتفاء به في صفحة البروفايل (سوى الأساس)
+    const isRoot = !(p.fatherId || p.motherId);
+    
     wrap.innerHTML=`
       ${isAdmin?`<div class="node-actions">
         <button class="act-btn act-edit"   onclick="event.stopPropagation();openEdit('${p.id}')">✏️</button>
@@ -679,28 +725,78 @@ function renderTree(){
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
         <div class="node-name">${esc(getDisplayName(p))}</div>
-        <div class="node-meta">${esc(getAncestryLine(p))}</div>
+        ${isRoot ? `<div class="node-meta" style="color:var(--gold)">🌱 الأساس</div>` : ''}
       </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
     canvas.appendChild(wrap);
   });
   
-  if (firstRender) {
-    mapZoomFit();
+  if (firstRender && !focusRootId) {
+    mapZoomFit(canvasW, canvasH);
     firstRender = false;
   }
 }
 
+/* ══════════════════════════════════
+   HIGH-RES EXPORT (تصوير الشاشة)
+══════════════════════════════════ */
+async function exportTree(rootId = null) {
+  closeProfile(); 
+  showToast('⏳ جاري تجهيز الصورة عالية الدقة، يرجى الانتظار...');
+
+  const canvasEl = document.getElementById('treeCanvas');
+  const oldTransform = canvasEl.style.transform;
+  const oldScale = mapScale, oldPanX = mapPanX, oldPanY = mapPanY;
+
+  // Render sub-tree to canvas, remove translate so it captures perfectly
+  renderTree(rootId);
+  canvasEl.style.transform = 'none';
+
+  // Wait for images to load smoothly
+  await new Promise(r => setTimeout(r, 600));
+
+  try {
+    const canvas = await html2canvas(canvasEl, {
+      backgroundColor: '#0b1507',
+      scale: 2, // دقة عالية
+      useCORS: true,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    const personName = rootId ? (people.find(p=>p.id===rootId)?.name || 'الفرد') : 'العائلة';
+    link.download = `شجرة_${personName}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ تم تحميل الصورة بنجاح!');
+  } catch (err) {
+    showToast('❌ حدث خطأ أثناء التقاط الصورة');
+    console.error(err);
+  }
+
+  // Restore back to full tree and old zoom position
+  renderTree();
+  mapScale = oldScale; mapPanX = oldPanX; mapPanY = oldPanY;
+  updateMapTransform();
+}
+
+/* ══════════════════════════════════
+   PROFILE & LIGHTBOX
+══════════════════════════════════ */
 function showProfile(id){
   const p=people.find(x=>x.id===id);if(!p)return;
+  currentProfileId = id;
   const childCount=people.filter(x=>x.fatherId===id||x.motherId===id).length;
   document.getElementById('profileImgWrap').innerHTML=p.photo
     ?`<img class="profile-img" src="${p.photo}" onclick="openLightbox(this.src);event.stopPropagation()" title="اضغط لتكبير الصورة">`
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=getDisplayName(p);
+  
+  // سلسلة النسب التفصيلية تظهر هنا فقط داخل البطاقة
   document.getElementById('profileMeta').textContent=getAncestryLine(p);
   document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء في الشجرة: '+childCount:'';
+  
   document.getElementById('profileOverlay').classList.add('open');
 }
 function closeProfile(){document.getElementById('profileOverlay').classList.remove('open');}
