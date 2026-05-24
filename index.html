@@ -234,7 +234,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 <div class="status-bar" id="statusBar"></div>
 
 <div class="admin-bar">
-  <button class="btn btn-blue"  onclick="exportTree()">📸 تصوير الشجرة كاملة</button>
+  <button class="btn btn-blue"  onclick="exportTree()" id="exportBtn" style="display:none;">📸 تصوير الشجرة كاملة</button>
   <button class="btn btn-green" onclick="openAddModal()">＋ إضافة فرد وأبنائه</button>
   <button class="btn btn-gold"  onclick="toggleAdmin()" id="adminBtn">🔐 وضع الإدارة</button>
   <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none; background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 مسح الكل</button>
@@ -388,7 +388,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
     <div class="profile-meta"  id="profileMeta" style="font-weight:700; color:#e8c97a"></div>
     <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:#a09060"></div>
     
-    <button class="btn btn-gold" style="margin-top:18px;width:100%;justify-content:center" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
+    <button class="btn btn-gold" id="exportSubBtn" style="margin-top:18px;width:100%;justify-content:center;display:none;" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
     <button class="btn btn-cancel" style="margin-top:8px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
   </div>
 </div>
@@ -546,7 +546,6 @@ function mapZoomFit(forcedCanvasW=null, forcedCanvasH=null) {
   const sY = ts.clientHeight / (ch + 60);
   mapScale = Math.min(sX, sY, 1.1); 
   mapPanX = (ts.clientWidth - cw * mapScale) / 2;
-  // التوسيط العمودي ليكون بالمنتصف تماماً
   mapPanY = Math.max(20, (ts.clientHeight - ch * mapScale) / 2); 
   updateMapTransform();
 }
@@ -600,7 +599,6 @@ function getAncestryLine(person) {
 function buildTree(focusRootId = null){
   const ch={}, roots=[];
   
-  // فلترة النسل في حال التصوير لنسل محدد
   let validNodes = new Set();
   if(focusRootId) {
     function addSub(id) {
@@ -643,7 +641,6 @@ function buildTree(focusRootId = null){
   roots.forEach(r=>calcW(r));
   
   const pos={};
-  // البناء المبدئي (من الأعلى للأسفل)
   function place(id,x,y){
     const c=ch[id]||[];pos[id]={x,y};
     if(!c.length)return;
@@ -653,7 +650,6 @@ function buildTree(focusRootId = null){
   }
   let off=0;roots.forEach(r=>{place(r,off+sw[r]/2,TP);off+=sw[r]+HG;});
 
-  // قلب الإحداثيات لتبدأ من الأسفل للأعلى
   let maxDepthY = 0;
   Object.values(pos).forEach(({y}) => { if(y > maxDepthY) maxDepthY = y; });
   Object.values(pos).forEach(p => { 
@@ -684,7 +680,6 @@ function renderTree(focusRootId = null){
   const{pos,ch,canvasW,canvasH}=buildTree(focusRootId);
   canvas.style.width=canvasW+'px';canvas.style.height=canvasH+'px';
 
-  // رسم الخطوط (من أعلى الأب إلى أسفل الابن)
   people.forEach(p=>{
     if(!pos[p.id]) return;
     const c=ch[p.id]||[];if(!c.length)return;
@@ -702,7 +697,6 @@ function renderTree(focusRootId = null){
     });
   });
 
-  // رسم البطاقات
   people.forEach(p=>{
     if(!pos[p.id]) return;
     const{x,y}=pos[p.id];nodePos[p.id]={x,y,w:NW,h:NH};
@@ -714,7 +708,6 @@ function renderTree(focusRootId = null){
       ?`<img class="node-photo" src="${p.photo}" loading="lazy">`
       :`<div class="node-photo-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
     
-    // إخفاء النص الطويل من الشجرة، والاكتفاء به في صفحة البروفايل (سوى الأساس)
     const isRoot = !(p.fatherId || p.motherId);
     
     wrap.innerHTML=`
@@ -749,17 +742,15 @@ async function exportTree(rootId = null) {
   const oldTransform = canvasEl.style.transform;
   const oldScale = mapScale, oldPanX = mapPanX, oldPanY = mapPanY;
 
-  // Render sub-tree to canvas, remove translate so it captures perfectly
   renderTree(rootId);
   canvasEl.style.transform = 'none';
 
-  // Wait for images to load smoothly
   await new Promise(r => setTimeout(r, 600));
 
   try {
     const canvas = await html2canvas(canvasEl, {
       backgroundColor: '#0b1507',
-      scale: 2, // دقة عالية
+      scale: 2, 
       useCORS: true,
       logging: false
     });
@@ -775,7 +766,6 @@ async function exportTree(rootId = null) {
     console.error(err);
   }
 
-  // Restore back to full tree and old zoom position
   renderTree();
   mapScale = oldScale; mapPanX = oldPanX; mapPanY = oldPanY;
   updateMapTransform();
@@ -793,10 +783,12 @@ function showProfile(id){
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=getDisplayName(p);
   
-  // سلسلة النسب التفصيلية تظهر هنا فقط داخل البطاقة
   document.getElementById('profileMeta').textContent=getAncestryLine(p);
   document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء في الشجرة: '+childCount:'';
   
+  // إظهار زر التصدير في البروفايل فقط لوضع الإدارة
+  document.getElementById('exportSubBtn').style.display = isAdmin ? 'inline-flex' : 'none';
+
   document.getElementById('profileOverlay').classList.add('open');
 }
 function closeProfile(){document.getElementById('profileOverlay').classList.remove('open');}
@@ -1145,6 +1137,7 @@ function toggleAdmin(){
       document.getElementById('adminBtn').textContent='🔓 إيقاف الإدارة';
       document.getElementById('adminBadge').style.display='block';
       document.getElementById('clearBtn').style.display='inline-flex';
+      document.getElementById('exportBtn').style.display='inline-flex'; // إظهار زر التصدير
       document.getElementById('dragInfo').classList.add('show');
       showToast('✅ تم تفعيل وضع الإدارة');
       renderTree();
@@ -1154,6 +1147,7 @@ function toggleAdmin(){
     document.getElementById('adminBtn').textContent='🔐 وضع الإدارة';
     document.getElementById('adminBadge').style.display='none';
     document.getElementById('clearBtn').style.display='none';
+    document.getElementById('exportBtn').style.display='none'; // إخفاء زر التصدير
     document.getElementById('dragInfo').classList.remove('show');
     renderTree();
   }
