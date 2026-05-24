@@ -561,6 +561,11 @@ function getDisplayName(p) {
 }
 
 function getAncestryLine(person) {
+  // إذا لم يكن من نسل اليوسفي (أي تم تحديد اسم عائلة له أو لأحد آبائه من جهة الأم)
+  if(!isYousefiLine(person.id)) {
+    return ''; // يرجع نص فارغ (لا يظهر سلسلة النسب)
+  }
+
   const parentId = person.fatherId || person.motherId;
   if(!parentId) return '🌱 الأساس';
 
@@ -666,8 +671,6 @@ function renderTree(){
       ?`<img class="node-photo" src="${p.photo}" loading="lazy">`
       :`<div class="node-photo-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
     
-    const isRoot = !(p.fatherId || p.motherId);
-    
     wrap.innerHTML=`
       ${isAdmin?`<div class="node-actions">
         <button class="act-btn act-edit"   onclick="event.stopPropagation();openEdit('${p.id}')">✏️</button>
@@ -676,7 +679,7 @@ function renderTree(){
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
         <div class="node-name">${esc(getDisplayName(p))}</div>
-        ${isRoot ? `<div class="node-meta">🌱 الأساس</div>` : ''}
+        <div class="node-meta">${esc(getAncestryLine(p))}</div>
       </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
