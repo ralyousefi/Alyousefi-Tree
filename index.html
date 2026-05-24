@@ -58,16 +58,16 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .tree-section {
   padding: 0;
   margin: 10px 16px 80px;
-  overflow: hidden; /* Hide scrollbars for pan/zoom */
+  overflow: hidden;
   background: radial-gradient(ellipse at center, rgba(17,32,10,0.4) 0%, rgba(7,13,4,0.6) 100%);
   border: 1px solid rgba(201,168,76,.15);
   border-radius: 16px;
   height: calc(100vh - 240px);
   min-height: 450px;
   position: relative;
-  touch-action: none; /* Crucial for touch panning */
+  touch-action: none;
   cursor: grab;
-  direction: ltr; /* Keep math consistent */
+  direction: ltr;
 }
 .tree-section:active { cursor: grabbing; }
 
@@ -75,7 +75,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
   position: absolute;
   top: 0; left: 0;
   transform-origin: 0 0;
-  pointer-events: none; /* Let empty space drag fall through */
+  pointer-events: none;
 }
 .tree-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 
@@ -104,7 +104,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .zoom-btn:hover { background: var(--gold); color: #000; }
 
 /* ── Node ── */
-.node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s; pointer-events: auto; direction: rtl;}
+.node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s, left 0.3s, top 0.3s; pointer-events: auto; direction: rtl;}
 .node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(201,168,76,.7));transition:none}
 .node-wrap.drag-target .node-card{box-shadow:0 0 0 3px var(--gold),0 0 20px rgba(201,168,76,.5)!important}
 
@@ -114,7 +114,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
   display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
   padding:8px 6px 8px;text-align:center;
   box-shadow:0 4px 16px rgba(0,0,0,.3);
-  transition:transform .18s,box-shadow .18s;position:relative;touch-action:none;overflow:hidden;
+  transition:transform .18s,box-shadow .18s;position:relative;touch-action:none;overflow:visible;
 }
 .node-card:active{transform:scale(.95)}
 .node-card.boy{background:linear-gradient(160deg,#c8e4ff,#8dbfef,#5a9de0);border:2px solid #9ac7f5}
@@ -125,10 +125,33 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .node-name{font-weight:800;font-size:.78rem;color:#0d1a08;line-height:1.2;word-break:break-word;max-width:96px}
 .node-meta{font-size:.56rem;color:#2a3a20;margin-top:4px;opacity:.8;line-height:1.3;word-break:break-word}
 
+/* Collapse Button */
+.collapse-btn {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1a3a0c;
+  border: 1.5px solid var(--gold);
+  color: var(--gold);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  transition: all 0.2s;
+}
+.collapse-btn:hover { background: var(--gold); color: #000; transform: translateX(-50%) scale(1.15); }
+
 /* Admin btns */
-.node-actions{position:absolute;top:-18px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
+.node-actions{position:absolute;top:-22px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
 .node-wrap:hover .node-actions,.node-wrap.show-acts .node-actions{display:flex}
-.act-btn{width:22px;height:22px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .15s}
+.act-btn{width:24px;height:24px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .15s}
 .act-btn:hover{transform:scale(1.2)}
 .act-edit{background:#f39c12;color:#fff}
 .act-delete{background:#e74c3c;color:#fff}
@@ -424,6 +447,7 @@ let people=[], isAdmin=false, editingId=null, currentProfileId=null;
 let formGender='male', editGender='male';
 let nodePos={};
 let firstRender = true;
+let collapsedNodes = new Set(); // حالة طي العقد
 
 function setStatus(msg,type){
   const bar=document.getElementById('statusBar');
@@ -445,7 +469,8 @@ function initMapLogic() {
   const ts = document.getElementById('treeSection');
   
   ts.addEventListener('mousedown', e => {
-    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    // Prevent panning when clicking buttons or cards
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
     isPanning = true;
     startPanX = e.clientX - mapPanX;
     startPanY = e.clientY - mapPanY;
@@ -469,7 +494,8 @@ function initMapLogic() {
     if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    const newScale = Math.max(0.1, Math.min(mapScale + delta, 3));
+    // Allow zooming out much further for massive trees
+    const newScale = Math.max(0.05, Math.min(mapScale + delta, 3)); 
     
     const rect = ts.getBoundingClientRect();
     const offsetX = e.clientX - rect.left;
@@ -483,7 +509,7 @@ function initMapLogic() {
   
   let initialDist = 0, initialScale = 1;
   ts.addEventListener('touchstart', e => {
-    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
     if(e.touches.length === 1) {
       isPanning = true;
       startPanX = e.touches[0].clientX - mapPanX;
@@ -496,7 +522,7 @@ function initMapLogic() {
   }, {passive: false});
   
   window.addEventListener('touchmove', e => {
-    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
     if(isPanning && e.touches.length === 1) {
       e.preventDefault();
       mapPanX = e.touches[0].clientX - startPanX;
@@ -505,7 +531,7 @@ function initMapLogic() {
     } else if(e.touches.length === 2 && initialDist) {
       e.preventDefault();
       const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-      const newScale = Math.max(0.1, Math.min(initialScale * (dist / initialDist), 3));
+      const newScale = Math.max(0.05, Math.min(initialScale * (dist / initialDist), 3));
       
       const rect = ts.getBoundingClientRect();
       const centerX = (e.touches[0].clientX + e.touches[1].clientX)/2 - rect.left;
@@ -542,7 +568,7 @@ function mapZoomIn() {
 
 function mapZoomOut() {
   const ts = document.getElementById('treeSection');
-  const newScale = Math.max(mapScale - 0.2, 0.1);
+  const newScale = Math.max(mapScale - 0.2, 0.05);
   const centerX = ts.clientWidth / 2;
   const centerY = ts.clientHeight / 2;
   mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
@@ -610,13 +636,24 @@ function getAncestryLine(person) {
 }
 
 /* ══════════════════════════════════
-   ORDERING CHILDREN (ترتيب الأبناء)
+   COLLAPSE LOGIC
+══════════════════════════════════ */
+function toggleCollapse(id) {
+  if (collapsedNodes.has(id)) {
+    collapsedNodes.delete(id);
+  } else {
+    collapsedNodes.add(id);
+  }
+  renderTree(); // إعادة الرسم بالترتيب الجديد
+}
+
+/* ══════════════════════════════════
+   ORDERING CHILDREN
 ══════════════════════════════════ */
 function openOrderChildren() {
   const parentId = currentProfileId;
   if (!parentId) return;
   
-  // جلب الأبناء وترتيبهم مبدئياً تصاعدياً حسب رقم الترتيب 
   const kids = people.filter(x => x.fatherId === parentId || x.motherId === parentId)
                      .sort((a, b) => (a.order || 0) - (b.order || 0));
                      
@@ -693,7 +730,6 @@ function buildTree(focusRootId = null){
     }
   });
 
-  // ترتيب الأبناء: تنازلياً بحيث يكون صاحب الرقم الأصغر في اليمين (الآخر في المصفوفة)
   Object.keys(ch).forEach(k=>ch[k].sort((a,b)=>{
     const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
     const diff = (pb.order || 0) - (pa.order || 0);
@@ -710,7 +746,8 @@ function buildTree(focusRootId = null){
 
   const sw={};
   function calcW(id){
-    const c=ch[id]||[];
+    // إذا كان الفرع مطوياً، نعتبر أن الأبناء غير موجودين في الحساب
+    const c = collapsedNodes.has(id) ? [] : (ch[id]||[]);
     if(!c.length){sw[id]=NW;return NW;}
     const t=c.reduce((s,x)=>s+calcW(x),0)+HG*(c.length-1);
     sw[id]=Math.max(NW,t);return sw[id];
@@ -719,7 +756,8 @@ function buildTree(focusRootId = null){
   
   const pos={};
   function place(id,x,y){
-    const c=ch[id]||[];pos[id]={x,y};
+    const c = collapsedNodes.has(id) ? [] : (ch[id]||[]);
+    pos[id]={x,y};
     if(!c.length)return;
     const tw=c.reduce((s,x)=>s+sw[x],0)+HG*(c.length-1);
     let cx=x-tw/2;
@@ -759,6 +797,9 @@ function renderTree(focusRootId = null){
 
   people.forEach(p=>{
     if(!pos[p.id]) return;
+    // لا ترسم خطوط إذا كان الفرع مطوياً
+    if(collapsedNodes.has(p.id)) return;
+
     const c=ch[p.id]||[];if(!c.length)return;
     const px=pos[p.id].x, py=pos[p.id].y; 
     c.forEach(cid=>{
@@ -787,7 +828,13 @@ function renderTree(focusRootId = null){
     
     const isRoot = !(p.fatherId || p.motherId);
     
+    // إظهار زر الطي/التوسعة إذا كان لديه أبناء
+    const hasChildren = ch[p.id] && ch[p.id].length > 0;
+    const isCollapsed = collapsedNodes.has(p.id);
+    const collapseBtnHTML = hasChildren ? `<button class="collapse-btn" title="${isCollapsed ? 'إظهار الفروع' : 'إخفاء الفروع'}" onclick="event.stopPropagation(); toggleCollapse('${p.id}')">${isCollapsed ? '➕' : '➖'}</button>` : '';
+
     wrap.innerHTML=`
+      ${collapseBtnHTML}
       ${isAdmin?`<div class="node-actions">
         <button class="act-btn act-edit"   onclick="event.stopPropagation();openEdit('${p.id}')">✏️</button>
         <button class="act-btn act-delete" onclick="event.stopPropagation();deletePerson('${p.id}')">🗑</button>
@@ -809,7 +856,7 @@ function renderTree(focusRootId = null){
 }
 
 /* ══════════════════════════════════
-   HIGH-RES EXPORT (تصوير الشاشة)
+   HIGH-RES EXPORT
 ══════════════════════════════════ */
 async function exportTree(rootId = null) {
   closeProfile(); 
@@ -819,6 +866,7 @@ async function exportTree(rootId = null) {
   const oldTransform = canvasEl.style.transform;
   const oldScale = mapScale, oldPanX = mapPanX, oldPanY = mapPanY;
 
+  // عند التصدير، نقوم بنشر جميع الفروع مؤقتاً إذا أردنا الشجرة كاملة (اختياري، تركته كما هو ليتم تصوير ما هو ظاهر)
   renderTree(rootId);
   canvasEl.style.transform = 'none';
 
@@ -1014,7 +1062,7 @@ async function savePerson(){
       gender:formGender,
       familyName: familyName || null,
       fatherId, motherId,
-      order: 0, // إضافة قيمة مبدئية للترتيب
+      order: 0,
       photo:document.getElementById('addPhotoData').value||null,
       createdAt:Date.now()
     });
@@ -1127,7 +1175,7 @@ function attachDrag(wrap){
   card.addEventListener('mousedown',onDragStart);
 }
 function onDragStart(e){
-  if(e.target.closest('.act-btn'))return;
+  if(e.target.closest('.act-btn') || e.target.closest('.collapse-btn'))return;
   e.preventDefault();
   const wrap=e.currentTarget.closest('.node-wrap');
   const id=wrap.dataset.id;
