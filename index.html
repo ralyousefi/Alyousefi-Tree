@@ -2,9 +2,10 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>شجرة أبناء وأحفاد الشيخ ابو حمد </title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
   const FIREBASE_CONFIG = {
@@ -20,21 +21,34 @@
 </script>
 
 <style>
-:root{--gold:#c9a84c;--gold-light:#e8c97a;--boy:#3a7bd5;--boy-light:#6fa3e8;--girl:#d5619a;--girl-light:#e89bc5}
+/* ── ألوان وثيم الطبيعة ── */
+:root {
+  --gold: #c9a84c; 
+  --gold-light: #e8c97a; 
+  --brown-branch: #5D4037; 
+  --boy: #2E7D32; 
+  --girl: #C2185B; 
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Cairo',sans-serif;background:#0b1507;min-height:100vh;color:#f5e8c8;overflow-x:hidden;touch-action:pan-y}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 110%,#1a3a0c 0%,#091004 60%,#040802 100%);z-index:0}
+body{
+  font-family:'Cairo',sans-serif;
+  background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #A8E6CF 80%, #558B2F 100%);
+  min-height:100vh;
+  color:#333;
+  overflow-x:hidden;
+  touch-action:pan-y;
+}
 .app-wrapper{position:relative;z-index:1;min-height:100vh}
 
 /* ── Header ── */
-header{text-align:center;padding:12px 16px 8px}
-header h1{font-family:'Amiri',serif;font-size:clamp(1.1rem,4.5vw,2rem);color:var(--gold);text-shadow:0 2px 24px rgba(201,168,76,.55)}
-header p{font-size:.85rem;color:#a09050;margin-top:2px}
-.header-line{width:160px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:10px auto 0}
+header{text-align:center;padding:26px 16px 10px}
+header h1{font-family:'Amiri',serif;font-size:clamp(1.8rem,5vw,3rem);color:#2E7D32;text-shadow:0 2px 10px rgba(255,255,255,0.8)}
+header p{font-size:.85rem;color:#5D4037;font-weight:bold;margin-top:4px}
+.header-line{width:160px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#5D4037,transparent);margin:10px auto 0}
 
 /* ── Buttons ── */
-.admin-bar{display:flex;justify-content:center;gap:7px;padding:7px 10px 5px;flex-wrap:wrap;background:rgba(255,255,255,.82);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);position:sticky;top:0;z-index:20;border-bottom:1px solid rgba(93,64,55,.15);box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.btn{font-family:'Cairo',sans-serif;font-size:.76rem;font-weight:700;padding:8px 13px;border:none;border-radius:22px;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap}.btn:active{transform:scale(.93)}
+.admin-bar{display:flex;justify-content:center;gap:9px;padding:10px 14px 6px;flex-wrap:wrap}
+.btn{font-family:'Cairo',sans-serif;font-size:.84rem;font-weight:700;padding:9px 18px;border:none;border-radius:30px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .btn-green{background:linear-gradient(135deg,#3a8c2a,#266018);color:#fff}
 .btn-green:hover,.btn-green:active{transform:translateY(-1px);box-shadow:0 6px 20px rgba(58,140,42,.4)}
 .btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#1a0e00}
@@ -44,81 +58,160 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
 
 .admin-badge{text-align:center;display:none;margin-bottom:3px}
 .admin-badge span{display:inline-block;background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:4px 14px;font-size:.76rem;color:var(--gold)}
-.drag-info{text-align:center;font-size:.72rem;color:rgba(201,168,76,.45);padding:3px;display:none}
+.drag-info{text-align:center;font-size:.72rem;color:rgba(93,64,55,.8);font-weight:bold;padding:3px;display:none}
 .drag-info.show{display:block}
 
 /* ── Status bar ── */
-.status-bar{text-align:center;padding:4px 16px;font-size:.75rem;min-height:22px}
-.status-connecting{color:#f39c12}
-.status-ok{color:#2ecc71}
-.status-error{color:#e74c3c}
+.status-bar{text-align:center;padding:4px 16px;font-size:.75rem;font-weight:bold;min-height:22px}
+.status-connecting{color:#d35400}
+.status-ok{color:#27ae60}
+.status-error{color:#c0392b}
 
-/* ── Setup Banner ── */
-.setup-banner{
-  background:linear-gradient(135deg,#1a0a00,#2d1500);
-  border:1px solid #c0392b;border-radius:12px;
-  margin:10px 16px;padding:16px 18px;
+/* ── Tree canvas (Map Mode) ── */
+.tree-section {
+  padding: 0;
+  margin: 10px 16px 80px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(93, 64, 55, 0.3);
+  backdrop-filter: blur(2px);
+  border-radius: 16px;
+  height: calc(100vh - 240px);
+  min-height: 450px;
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+  direction: ltr;
 }
-.setup-banner h3{color:#e74c3c;font-size:1rem;margin-bottom:8px}
-.setup-banner p{font-size:.8rem;color:#ddb080;line-height:1.7;margin-bottom:6px}
-.setup-banner code{background:rgba(0,0,0,.4);padding:2px 8px;border-radius:6px;font-size:.78rem;color:#f39c12;direction:ltr;display:inline-block}
-.setup-steps{list-style:none;padding:0}
-.setup-steps li{font-size:.8rem;color:#ddb080;padding:4px 0;display:flex;gap:8px}
-.setup-steps li::before{content:'';color:var(--gold);flex-shrink:0}
+.tree-section:active { cursor: grabbing; }
 
-/* ── Tree canvas ── */
-.tree-section{padding:0;margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 0%,#c8e6c9 0%,#e8f5e9 40%,#f0f7ee 100%);border-radius:0;height:calc(100dvh - 136px);min-height:370px;position:relative;touch-action:none;cursor:grab;direction:ltr;border:none}.tree-section.panning{cursor:grabbing}.viewport-hint{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.32);color:#fff;font-size:.6rem;padding:3px 11px;border-radius:16px;pointer-events:none;white-space:nowrap;transition:opacity 1s;z-index:5}.viewport-hint.gone{opacity:0}.search-fab{position:absolute;bottom:34px;right:10px;z-index:30;width:42px;height:42px;border-radius:50%;background:#5D4037;color:#fff;font-size:1rem;border:none;cursor:pointer;box-shadow:0 4px 14px rgba(0,0,0,.28);display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent}.search-fab:active{transform:scale(.88)}
-.tree-canvas{display:inline-block;min-width:100%;position:relative}
+.tree-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  pointer-events: none;
+}
 .tree-svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible}
 
-/* ── Node ── */
-.node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s}
-.node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(201,168,76,.7));transition:none}
-.node-wrap.drag-target .node-card{box-shadow:0 0 0 3px var(--gold),0 0 20px rgba(201,168,76,.5)!important}
-
-.node-card{
-  border-radius:50% 50% 46% 46%/55% 55% 45% 45%;
-  width:102px;min-height:116px;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:8px 6px 8px;text-align:center;
-  box-shadow:0 4px 16px rgba(0,0,0,.3);
-  transition:transform .18s,box-shadow .18s;position:relative;touch-action:none;overflow:hidden;
+/* Zoom Controls */
+.zoom-tools {
+  position: absolute;
+  top: 16px; left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
 }
-.node-card:active{transform:scale(.95)}
-.node-card.boy{background:linear-gradient(160deg,#c8e4ff,#8dbfef,#5a9de0);border:2px solid #9ac7f5}
-.node-card.girl{background:linear-gradient(160deg,#ffd6ec,#f5a8d0,#e872b8);border:2px solid #f5a8d0}
+.zoom-btn {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(93,64,55,.3);
+  color: #5D4037;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.zoom-btn:hover { background: #5D4037; color: #fff; }
 
-.node-photo{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.7);margin-bottom:4px;flex-shrink:0}
-.node-photo-placeholder{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid rgba(255,255,255,.5);margin-bottom:4px;flex-shrink:0;background:rgba(255,255,255,.25)}
-.node-name{font-weight:800;font-size:.76rem;color:#0d1a08;line-height:1.2;word-break:break-word;max-width:90px}
-.node-meta{font-size:.58rem;color:#2a3a20;margin-top:2px;opacity:.7}
+/* ── Node (Classic Nature Theme) ── */
+.node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s, left 0.3s, top 0.3s; pointer-events: auto; direction: rtl;}
+.node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(0,0,0,.4));transition:none}
+.node-wrap.drag-target .node-card{box-shadow:0 0 0 3px #5D4037,0 0 20px rgba(93,64,55,.6)!important}
+
+.node-card {
+  border-radius: 12px;
+  width: 120px; 
+  min-height: 125px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 10px 8px; text-align: center;
+  background: linear-gradient(145deg, #fffcf5, #f5ecd3);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  border: 3px solid #d4c4a1;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative; touch-action: none; overflow: visible;
+}
+.node-card:active { transform: scale(0.92); }
+
+.node-card.boy { border-color: #66BB6A; } 
+.node-card.girl { border-color: #F06292; } 
+
+.node-photo, .node-photo-placeholder {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  margin-bottom: 8px; flex-shrink: 0;
+  background: #e0e0e0;
+}
+.node-photo-placeholder { display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#fff;}
+.node-name { font-weight: 800; font-size: 0.85rem; color: #3e2723; line-height: 1.3; word-break:break-word; max-width:105px; }
+.node-meta { font-size: 0.65rem; color: #795548; margin-top: 4px; font-weight: 600; line-height:1.3; word-break:break-word; }
+
+/* Collapse Button */
+.collapse-btn {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fffcf5;
+  border: 2px solid #5D4037;
+  color: #5D4037;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  transition: all 0.2s;
+}
+.collapse-btn:hover { background: #5D4037; color: #fffcf5; transform: translateX(-50%) scale(1.15); }
 
 /* Admin btns */
-.node-actions{position:absolute;top:-18px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
+.node-actions{position:absolute;top:-22px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
 .node-wrap:hover .node-actions,.node-wrap.show-acts .node-actions{display:flex}
-.act-btn{width:22px;height:22px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .15s}
+.act-btn{width:24px;height:24px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .15s}
 .act-btn:hover{transform:scale(1.2)}
 .act-edit{background:#f39c12;color:#fff}
 .act-delete{background:#e74c3c;color:#fff}
 
 /* Drag ghost */
-.drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;display:none}
+.drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.9;display:none}
 
 /* Empty */
-.empty-state{text-align:center;padding:60px 20px;color:#5a7850}
-.empty-state .tree-icon{font-size:4rem;margin-bottom:12px;opacity:.4}
-.empty-state p{font-size:.95rem;line-height:1.9}
+.empty-state{text-align:center;padding:60px 20px;color:#3e2723; pointer-events:auto;}
+.empty-state .tree-icon{font-size:4rem;margin-bottom:12px;opacity:.6}
+.empty-state p{font-size:.95rem;line-height:1.9;font-weight:bold}
 
-/* ── Modal ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .28s;padding:0}@media(min-width:580px){.modal-overlay{align-items:center;padding:14px}}
+/* ── Modal (kept dark for contrast/readability of inputs) ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s;padding:14px}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:linear-gradient(170deg,#1a2a0e,#0d1506);border:1px solid rgba(201,168,76,.22);border-radius:22px 22px 0 0;padding:16px 16px 30px;width:100%;max-width:480px;box-shadow:0 -8px 40px rgba(0,0,0,.5);transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.67,0);max-height:91dvh;overflow-y:auto;color:#f5e8c8}@media(min-width:580px){.modal{border-radius:20px;transform:translateY(28px);max-height:86vh}}.modal-overlay.open .modal{transform:translateY(0)}.modal-handle{width:38px;height:4px;background:rgba(255,255,255,.18);border-radius:2px;margin:0 auto 13px}@media(min-width:580px){.modal-handle{display:none}}
+.modal{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:22px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.8);transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto;color:#f5e8c8}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal h2{font-family:'Amiri',serif;color:var(--gold);font-size:1.35rem;margin-bottom:14px;text-align:center}
 .form-group{margin-bottom:12px}
 .form-group label{display:block;font-size:.8rem;color:var(--gold-light);margin-bottom:4px;font-weight:700}
-.form-group input[type=text]{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:9px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.88rem}
+.form-group input[type=text], .form-group input[type=number] {width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:9px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.88rem}
 .form-group input:focus{outline:none;border-color:var(--gold)}
+
+/* Dynamic Children Fields */
+.child-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; background:rgba(255,255,255,.03); padding:8px; border-radius:10px; border:1px solid rgba(201,168,76,.15); }
+.child-row input, .child-row select { background: rgba(255,255,255,.06); border: 1px solid rgba(201,168,76,.22); border-radius: 8px; padding: 7px; color: #f5e8c8; font-family: 'Cairo', sans-serif; font-size: .8rem; }
+.child-row .child-name { flex: 2; min-width: 100px; }
+.child-row .child-family { flex: 1.5; min-width: 90px; }
+.child-row .child-gender { flex: 1; min-width: 70px; }
+.child-del { background: #e74c3c; color: #fff; border: none; border-radius: 8px; width: 32px; height: 34px; cursor: pointer; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+.btn-small { padding: 6px 14px; font-size: .75rem; margin-top: 4px; }
 
 /* Photo */
 .photo-upload-area{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px dashed rgba(201,168,76,.3);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .2s}
@@ -147,48 +240,41 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
 /* Gender */
 .gender-toggle{display:flex;gap:10px}
 .gender-btn{flex:1;padding:9px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.86rem;font-weight:700;transition:all .2s;background:rgba(255,255,255,.05);color:#999}
-.gender-btn.boy.active{border-color:var(--boy);background:rgba(58,123,213,.2);color:var(--boy-light)}
-.gender-btn.girl.active{border-color:var(--girl);background:rgba(213,97,154,.2);color:var(--girl-light)}
+.gender-btn.boy.active{border-color:#3a7bd5;background:rgba(58,123,213,.2);color:#6fa3e8}
+.gender-btn.girl.active{border-color:#d5619a;background:rgba(213,97,154,.2);color:#e89bc5}
 
 .modal-actions{display:flex;gap:10px;margin-top:16px}
 .modal-actions .btn{flex:1;justify-content:center}
 
 /* Profile */
-.profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .25s;padding:0}@media(min-width:580px){.profile-overlay{align-items:center;padding:20px}}
+.profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
 .profile-overlay.open{opacity:1;pointer-events:all}
-.profile-card{background:linear-gradient(170deg,#1a2a0e,#0d1506);border:1px solid rgba(201,168,76,.3);border-radius:22px 22px 0 0;padding:18px 18px 28px;text-align:center;width:100%;max-width:400px;box-shadow:0 -6px 32px rgba(0,0,0,.5);max-height:88dvh;overflow-y:auto;color:#f5e8c8;transform:translateY(100%);transition:transform .32s cubic-bezier(.32,0,.67,0)}@media(min-width:580px){.profile-card{border-radius:20px;transform:translateY(26px) scale(.95);max-height:78vh}}.profile-overlay.open .profile-card{transform:translateY(0) scale(1)}
+.profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8); max-height:90vh; overflow-y:auto; color:#f5e8c8}
 .profile-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 14px;display:block}
 .profile-placeholder{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 14px}
+
+/* ── Lightbox ── */
+.profile-img{cursor:zoom-in}
+.lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;z-index:9000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
+.lightbox-overlay.open{opacity:1;pointer-events:all}
+.lightbox-overlay img{max-width:90vw;max-height:88vh;border-radius:16px;box-shadow:0 0 60px rgba(0,0,0,.8);object-fit:contain;transition:transform .2s;border:2px solid rgba(201,168,76,.3)}
+.lightbox-close{position:fixed;top:18px;left:18px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;backdrop-filter:blur(6px)}
+.lightbox-close:hover{background:rgba(255,255,255,.22)}
 .profile-name{font-family:'Amiri',serif;font-size:1.5rem;color:var(--gold);margin-bottom:4px}
-.profile-meta{font-size:.82rem;color:#a09060;margin-bottom:4px}
+.profile-meta{font-size:.82rem;color:#a09060;margin-bottom:4px;line-height:1.4}
 
 /* Toast */
-/* Search */
-.search-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;padding-top:52px;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}
-.search-overlay.open{opacity:1;pointer-events:all}
-.search-box{background:#fff;border-radius:16px;padding:14px;width:calc(100% - 26px);max-width:370px;box-shadow:0 8px 32px rgba(0,0,0,.28)}
-.search-box input{width:100%;padding:10px 13px;border:1.5px solid #ddd;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;color:#333;margin-bottom:8px;-webkit-appearance:none}
-.search-box input:focus{outline:none;border-color:#2E7D32}
-.search-results{max-height:44vh;overflow-y:auto}
-.search-result-item{padding:9px 10px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .12s}
-.search-result-item:hover,.search-result-item:active{background:#f5f5f5}
-.sri-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #ddd;flex-shrink:0}
-.sri-avatar{width:36px;height:36px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
-.sri-info{flex:1;min-width:0}
-.sri-name{font-weight:700;font-size:.83rem;color:#1a0e00}
-.sri-meta{font-size:.65rem;color:#795548;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.search-empty{text-align:center;color:#999;font-size:.8rem;padding:18px}
-.search-overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.5);display:flex;align-items:flex-start;padding-top:52px;justify-content:center;opacity:0;pointer-events:none;transition:opacity .22s}.search-overlay.open{opacity:1;pointer-events:all}.search-box{background:#fff;border-radius:16px;padding:14px;width:calc(100% - 26px);max-width:370px;box-shadow:0 8px 32px rgba(0,0,0,.28)}.search-box input{width:100%;padding:10px 13px;border:1.5px solid #ddd;border-radius:10px;font-family:'Cairo',sans-serif;font-size:.88rem;color:#333;margin-bottom:8px;-webkit-appearance:none}.search-box input:focus{outline:none;border-color:#2E7D32}.search-results{max-height:44vh;overflow-y:auto}.search-result-item{padding:9px 10px;border-radius:8px;cursor:pointer;display:flex;align-items:center;gap:9px;transition:background .12s}.search-result-item:hover,.search-result-item:active{background:#f5f5f5}.sri-photo{width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid #ddd;flex-shrink:0}.sri-avatar{width:36px;height:36px;border-radius:50%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}.sri-info{flex:1;min-width:0}.sri-name{font-weight:700;font-size:.83rem;color:#1a0e00}.sri-meta{font-size:.65rem;color:#795548;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.search-empty{text-align:center;color:#999;font-size:.8rem;padding:18px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(20,36,10,.96);border:1px solid var(--gold);color:var(--gold);padding:10px 22px;border-radius:28px;font-size:.84rem;z-index:9999;transition:transform .35s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* Loader */
-.loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:rgba(201,168,76,.25);border-radius:3px}
-@media(max-width:480px){.node-card{width:88px;min-height:100px}.node-photo,.node-photo-placeholder{width:50px;height:50px}}
+/* ── Mobile Optimization ── */
+@media(max-width:480px){
+  .tree-section { margin: 5px 8px 60px; height: calc(100vh - 200px); }
+  .node-card { width:100px; min-height:115px; padding: 8px 4px; border-radius: 12px; }
+  .node-photo, .node-photo-placeholder { width:48px; height:48px; margin-bottom: 6px; font-size: 1.2rem; }
+  .node-name { font-size: 0.75rem; max-width: 90px; }
+  .collapse-btn { width: 22px; height: 22px; font-size: 0.7rem; top: -10px; }
+}
 </style>
 </head>
 <body>
@@ -200,61 +286,44 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
   <div class="header-line"></div>
 </header>
 
-<div class="setup-banner" id="setupBanner" style="display:none">
-  <h3>⚙️ يجب إعداد Firebase أولاً</h3>
-  <p>افتح الملف في محرر نصوص وأدخل بيانات مشروعك في المتغير <code>FIREBASE_CONFIG</code> في أعلى الصفحة.</p>
-  <ol class="setup-steps">
-    <li>اذهب إلى <code>console.firebase.google.com</code></li>
-    <li>أنشئ مشروعاً جديداً → أضف تطبيق ويب <code>&lt;/&gt;</code></li>
-    <li>انسخ الـ <code>firebaseConfig</code> والصقه في الملف</li>
-    <li>من القائمة الجانبية: <code>Firestore Database → إنشاء قاعدة بيانات</code></li>
-    <li>اختر <code>Test mode</code> ثم انقر Continue</li>
-    <li>ارفع الملف على <code>netlify.com/drop</code> وشارك الرابط</li>
-  </ol>
-</div>
-
 <div class="status-bar" id="statusBar"></div>
 
 <div class="admin-bar">
-  <button class="btn btn-green" onclick="openAddModal()">＋ إضافة فرد</button>
+  <button class="btn btn-blue"  onclick="exportTree()" id="exportBtn" style="display:none;">📸 تصوير الشجرة</button>
+  <button class="btn btn-green" onclick="openAddModal()">＋ إضافة فرد وأبنائه</button>
   <button class="btn btn-gold"  onclick="toggleAdmin()" id="adminBtn">🔐 وضع الإدارة</button>
-  <button class="btn btn-green" onclick="openSearch()" style="background:linear-gradient(135deg,#5D4037,#3e2723)">🔍 بحث</button>
-  <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none">🗑 مسح الكل</button>
+  <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none; background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 مسح الكل</button>
 </div>
 <div class="admin-badge" id="adminBadge">
-  <span>✅ وضع الإدارة — ✏️ تعديل أو اسحب ورقة لتغيير النسب</span>
+  <span>✅ وضع الإدارة — ✏️ تعديل أو اسحب بطاقة لتغيير النسب</span>
 </div>
-<div class="drag-info" id="dragInfo">✋ اسحب ورقة وأفلتها فوق أب آخر لتغيير النسب</div>
+<div class="drag-info" id="dragInfo">✋ اسحب بطاقة وأفلتها فوق أب آخر لتغيير النسب</div>
 
 <div class="tree-section" id="treeSection">
-  <div style="position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:7px;z-index:50">
-    <button class="zoom-btn" onclick="mapZoomIn()" title="تكبير" style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.88);border:1px solid rgba(93,64,55,.3);color:#5D4037;font-size:1rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">+</button>
-    <button class="zoom-btn" onclick="mapZoomOut()" style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.88);border:1px solid rgba(93,64,55,.3);color:#5D4037;font-size:1rem;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">−</button>
-    <button class="zoom-btn" onclick="mapZoomFit()" style="width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,.88);border:1px solid rgba(93,64,55,.3);color:#5D4037;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)">⛶</button>
+  <div class="zoom-tools">
+    <button class="zoom-btn" onclick="mapZoomIn()" title="تكبير">➕</button>
+    <button class="zoom-btn" onclick="mapZoomOut()" title="تصغير">➖</button>
+    <button class="zoom-btn" onclick="mapZoomFit()" title="احتواء الشاشة">⛶</button>
   </div>
-  <button class="search-fab" onclick="openSearch()">🔍</button>
-  <div class="viewport-hint" id="vpHint">👆 اسحب للتنقل · قرّب بإصبعين</div>
+  
   <div class="tree-canvas" id="treeCanvas">
     <svg class="tree-svg" id="treeSvg"></svg>
   </div>
 </div>
 </div>
 
-<div class="search-overlay" id="searchOverlay" onclick="closeSearch()">
-  <div class="search-box" onclick="event.stopPropagation()">
-    <input type="text" id="searchInput" placeholder="🔍 ابحث باسم الشخص..." oninput="doSearch()" autocomplete="off">
-    <div class="search-results" id="searchResults"></div>
-  </div>
-</div>
 <div class="drag-ghost" id="dragGhost"></div>
 
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
-    <div class="modal-handle"></div>
     <h2>🌿 إضافة فرد جديد</h2>
     <div class="form-group">
-      <label>الاسم *</label>
-      <input type="text" id="inputName" placeholder="أدخل الاسم الكامل">
+      <label>الاسم الأول *</label>
+      <input type="text" id="inputName" placeholder="أدخل الاسم الأول">
+    </div>
+    <div class="form-group">
+      <label>اسم العائلة (اختياري)</label>
+      <input type="text" id="inputFamilyName" placeholder="سيتم إضافة 'اليوسفي' تلقائياً لنسل الأبناء">
     </div>
     <div class="form-group">
       <label>الجنس *</label>
@@ -274,16 +343,35 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
       <button class="photo-remove-btn" id="addPhotoRemove" style="display:none" onclick="removePhoto('addPhotoPreview','addPhotoData','addPhotoRemove')">✕ إزالة الصورة</button>
     </div>
     <div class="form-group">
-      <label>الأب (اختياري)</label>
+      <label>الأب <span style="color:#e74c3c">*</span></label>
       <div class="searchable-select" id="fatherSelect">
-        <div class="selected-display" id="fatherDisplay" onclick="toggleSS('fatherSelect')">— بدون أب (جذر الشجرة) —</div>
+        <div class="selected-display" id="fatherDisplay" onclick="toggleSS('fatherSelect')">— اختر الأب —</div>
         <div class="ss-dropdown">
-          <input class="ss-search" id="fatherSearch" placeholder="🔍 ابحث..." oninput="filterSS('fatherSelect','fatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <input class="ss-search" id="fatherSearch" placeholder="🔍 ابحث باسم الأب..." oninput="filterSS('fatherSelect','fatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
           <div id="fatherList"></div>
         </div>
       </div>
       <input type="hidden" id="fatherValue">
     </div>
+    <div class="form-group">
+      <label>الأم <span style="color:#e74c3c">*</span> <span style="font-size:.72rem;color:#a09050;font-weight:400">(يكفي اختيار أحدهما)</span></label>
+      <div class="searchable-select" id="motherSelect">
+        <div class="selected-display" id="motherDisplay" onclick="toggleSS('motherSelect')">— اختر الأم —</div>
+        <div class="ss-dropdown">
+          <input class="ss-search" id="motherSearch" placeholder="🔍 ابحث باسم الأم..." oninput="filterSS('motherSelect','motherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <div id="motherList"></div>
+        </div>
+      </div>
+      <input type="hidden" id="motherValue">
+    </div>
+
+    <hr style="border:1px solid rgba(201,168,76,.15);margin:18px 0;">
+    <div class="form-group">
+      <label style="color:var(--gold-light); font-size:.85rem">👥 إضافة أبناء/بنات لهذا الفرد (اختياري)</label>
+      <div id="childrenList"></div>
+      <button type="button" class="btn btn-blue btn-small" onclick="addChildField()">+ إضافة ابن/ابنة</button>
+    </div>
+
     <div class="modal-actions">
       <button class="btn btn-green"  id="saveBtn" onclick="savePerson()">💾 حفظ</button>
       <button class="btn btn-cancel" onclick="closeModal()">إلغاء</button>
@@ -293,11 +381,14 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
 
 <div class="modal-overlay" id="editOverlay">
   <div class="modal">
-    <div class="modal-handle"></div>
     <h2>✏️ تعديل الفرد</h2>
     <div class="form-group">
-      <label>الاسم *</label>
+      <label>الاسم الأول *</label>
       <input type="text" id="editName">
+    </div>
+    <div class="form-group">
+      <label>اسم العائلة</label>
+      <input type="text" id="editFamilyName" placeholder="سيتم إضافة 'اليوسفي' تلقائياً لنسل الأبناء">
     </div>
     <div class="form-group">
       <label>الجنس *</label>
@@ -321,11 +412,22 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
       <div class="searchable-select" id="editFatherSelect">
         <div class="selected-display" id="editFatherDisplay" onclick="toggleSS('editFatherSelect')">— بدون أب —</div>
         <div class="ss-dropdown">
-          <input class="ss-search" id="editFatherSearch" placeholder="🔍 ابحث..." oninput="filterSS('editFatherSelect','editFatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <input class="ss-search" id="editFatherSearch" placeholder="🔍 ابحث باسم الأب..." oninput="filterSS('editFatherSelect','editFatherSearch')" onclick="event.stopPropagation()" autocomplete="off">
           <div id="editFatherList"></div>
         </div>
       </div>
       <input type="hidden" id="editFatherValue">
+    </div>
+    <div class="form-group">
+      <label>الأم</label>
+      <div class="searchable-select" id="editMotherSelect">
+        <div class="selected-display" id="editMotherDisplay" onclick="toggleSS('editMotherSelect')">— بدون أم —</div>
+        <div class="ss-dropdown">
+          <input class="ss-search" id="editMotherSearch" placeholder="🔍 ابحث باسم الأم..." oninput="filterSS('editMotherSelect','editMotherSearch')" onclick="event.stopPropagation()" autocomplete="off">
+          <div id="editMotherList"></div>
+        </div>
+      </div>
+      <input type="hidden" id="editMotherValue">
     </div>
     <div class="modal-actions">
       <button class="btn btn-gold"   id="editSaveBtn" onclick="saveEdit()">✅ تحديث</button>
@@ -334,30 +436,51 @@ header p{font-size:.85rem;color:#a09050;margin-top:2px}
   </div>
 </div>
 
+<div class="modal-overlay" id="orderChildrenOverlay">
+  <div class="modal" style="max-width:380px;">
+    <h2>🔢 ترتيب الأبناء</h2>
+    <p style="font-size:0.8rem; color:#a09060; margin-bottom:14px; text-align:center;">
+      أدخل رقم الترتيب لكل ابن (1 هو الأصغر ويكون في اليمين، وكلما زاد الرقم يتجه لليسار)
+    </p>
+    <div id="orderChildrenList" style="max-height:50vh; overflow-y:auto; margin-bottom:16px;"></div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" id="saveOrderBtn" onclick="saveChildrenOrder()">💾 حفظ الترتيب</button>
+      <button class="btn btn-cancel" onclick="closeOrderChildren()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
 <div class="profile-overlay" id="profileOverlay" onclick="closeProfile()">
-  <div class="profile-card" onclick="event.stopPropagation()"><div class="modal-handle"></div>
-    <div class="modal-handle"></div>
+  <div class="profile-card" onclick="event.stopPropagation()">
     <div id="profileImgWrap"></div>
     <div class="profile-name"  id="profileName"></div>
-    <div class="profile-meta"  id="profileMeta"></div>
-    <div class="profile-meta"  id="profileMeta2"></div>
-    <button class="btn btn-cancel" style="margin-top:14px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
+    <div class="profile-meta"  id="profileMeta" style="font-weight:700; color:#e8c97a"></div>
+    <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:#a09060"></div>
+    
+    <button class="btn btn-blue" id="orderChildrenBtn" style="margin-top:18px;width:100%;justify-content:center;display:none; background:linear-gradient(135deg,#3498db,#2980b9);" onclick="openOrderChildren()">🔢 ترتيب الأبناء</button>
+    
+    <button class="btn btn-gold" id="exportSubBtn" style="margin-top:8px;width:100%;justify-content:center;display:none;" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
+    <button class="btn btn-cancel" style="margin-top:8px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
+<div class="lightbox-overlay" id="lightboxOverlay" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <script>
 /* ══════════════════════════════════
-   STATE
+   STATE & DATA
 ══════════════════════════════════ */
-let people=[], isAdmin=false, editingId=null;
+let people=[], isAdmin=false, editingId=null, currentProfileId=null;
 let formGender='male', editGender='male';
 let nodePos={};
+let firstRender = true;
+let collapsedNodes = new Set(); 
 
-/* ══════════════════════════════════
-   STATUS
-══════════════════════════════════ */
 function setStatus(msg,type){
   const bar=document.getElementById('statusBar');
   if(bar){
@@ -366,242 +489,491 @@ function setStatus(msg,type){
   }
 }
 
-/* ══════════════════════════════════
-   LAYOUT CONSTANTS
-══════════════════════════════════ */
-const NW=106,NH=120,HG=12,VG=60,TP=28;
+// تعديل الثوابت لتناسب حجم البطاقات الكلاسيكية
+const NW=120, NH=135, HG=24, VG=60, TP=40;
 
 /* ══════════════════════════════════
-   BUILD POSITIONS
+   MAP ZOOM & PAN LOGIC
 ══════════════════════════════════ */
-function buildTree(){
-  const ch={},roots=[];
-  people.forEach(p=>{
-    ch[p.id]=ch[p.id]||[];
-    if(p.fatherId){ch[p.fatherId]=ch[p.fatherId]||[];ch[p.fatherId].push(p.id);}
-    else roots.push(p.id);
+let mapScale = 1, mapPanX = 0, mapPanY = 0;
+let isPanning = false, startPanX = 0, startPanY = 0;
+
+function initMapLogic() {
+  const ts = document.getElementById('treeSection');
+  
+  ts.addEventListener('mousedown', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
+    isPanning = true;
+    startPanX = e.clientX - mapPanX;
+    startPanY = e.clientY - mapPanY;
+    ts.style.cursor = 'grabbing';
   });
+  
+  window.addEventListener('mouseup', () => {
+    isPanning = false;
+    ts.style.cursor = 'grab';
+  });
+  
+  window.addEventListener('mousemove', e => {
+    if(!isPanning) return;
+    e.preventDefault();
+    mapPanX = e.clientX - startPanX;
+    mapPanY = e.clientY - startPanY;
+    updateMapTransform();
+  });
+  
+  ts.addEventListener('wheel', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1;
+    const newScale = Math.max(0.05, Math.min(mapScale + delta, 3)); 
+    
+    const rect = ts.getBoundingClientRect();
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    
+    mapPanX = offsetX - (offsetX - mapPanX) * (newScale / mapScale);
+    mapPanY = offsetY - (offsetY - mapPanY) * (newScale / mapScale);
+    mapScale = newScale;
+    updateMapTransform();
+  }, {passive: false});
+  
+  let initialDist = 0, initialScale = 1;
+  ts.addEventListener('touchstart', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
+    if(e.touches.length === 1) {
+      isPanning = true;
+      startPanX = e.touches[0].clientX - mapPanX;
+      startPanY = e.touches[0].clientY - mapPanY;
+    } else if(e.touches.length === 2) {
+      isPanning = false;
+      initialDist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      initialScale = mapScale;
+    }
+  }, {passive: false});
+  
+  window.addEventListener('touchmove', e => {
+    if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
+    if(isPanning && e.touches.length === 1) {
+      e.preventDefault();
+      mapPanX = e.touches[0].clientX - startPanX;
+      mapPanY = e.touches[0].clientY - startPanY;
+      updateMapTransform();
+    } else if(e.touches.length === 2 && initialDist) {
+      e.preventDefault();
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const newScale = Math.max(0.05, Math.min(initialScale * (dist / initialDist), 3));
+      
+      const rect = ts.getBoundingClientRect();
+      const centerX = (e.touches[0].clientX + e.touches[1].clientX)/2 - rect.left;
+      const centerY = (e.touches[0].clientY + e.touches[1].clientY)/2 - rect.top;
+      
+      mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
+      mapPanY = centerY - (centerY - mapPanY) * (newScale / mapScale);
+      mapScale = newScale;
+      updateMapTransform();
+    }
+  }, {passive: false});
+  
+  window.addEventListener('touchend', e => {
+    if(e.touches.length < 2) initialDist = 0;
+    if(e.touches.length === 0) isPanning = false;
+  });
+}
+
+function updateMapTransform() {
+  const tc = document.getElementById('treeCanvas');
+  tc.style.transform = `translate(${mapPanX}px, ${mapPanY}px) scale(${mapScale})`;
+}
+
+function mapZoomIn() {
+  const ts = document.getElementById('treeSection');
+  const newScale = Math.min(mapScale + 0.2, 3);
+  const centerX = ts.clientWidth / 2;
+  const centerY = ts.clientHeight / 2;
+  mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
+  mapPanY = centerY - (centerY - mapPanY) * (newScale / mapScale);
+  mapScale = newScale;
+  updateMapTransform();
+}
+
+function mapZoomOut() {
+  const ts = document.getElementById('treeSection');
+  const newScale = Math.max(mapScale - 0.2, 0.05);
+  const centerX = ts.clientWidth / 2;
+  const centerY = ts.clientHeight / 2;
+  mapPanX = centerX - (centerX - mapPanX) * (newScale / mapScale);
+  mapPanY = centerY - (centerY - mapPanY) * (newScale / mapScale);
+  mapScale = newScale;
+  updateMapTransform();
+}
+
+function mapZoomFit(forcedCanvasW=null, forcedCanvasH=null) {
+  let cw = forcedCanvasW, ch = forcedCanvasH;
+  if (!cw || !ch) {
+    const calc = buildTree();
+    cw = calc.canvasW; ch = calc.canvasH;
+  }
+  const ts = document.getElementById('treeSection');
+  const sX = ts.clientWidth / (cw + 60);
+  const sY = ts.clientHeight / (ch + 60);
+  mapScale = Math.min(sX, sY, 1.1); 
+  mapPanX = (ts.clientWidth - cw * mapScale) / 2;
+  mapPanY = Math.max(20, (ts.clientHeight - ch * mapScale) / 2); 
+  updateMapTransform();
+}
+
+/* ══════════════════════════════════
+   ANCESTRY & DISPLAY LOGIC
+══════════════════════════════════ */
+function isYousefiLine(personId) {
+  if(!personId) return true;
+  const p = people.find(x => x.id === personId);
+  if(!p) return true;
+  if(p.motherId) return false; 
+  if(p.fatherId) return isYousefiLine(p.fatherId);
+  return true;
+}
+
+function getDisplayName(p) {
+  if(p.familyName) return p.name + ' ' + p.familyName; 
+  if(isYousefiLine(p.id)) return p.name + ' اليوسفي'; 
+  return p.name; 
+}
+
+function getAncestryLine(person) {
+  if(!isYousefiLine(person.id)) return '';
+
+  const parentId = person.fatherId || person.motherId;
+  if(!parentId) return '🌱 الأساس';
+
+  const chain = [];
+  let cur = people.find(x=>x.id===parentId);
+  let depth = 0;
+  while(cur && depth < 5){ 
+    chain.push(cur);
+    const nextId = cur.fatherId || cur.motherId;
+    cur = nextId ? people.find(x=>x.id===nextId) : null;
+    depth++;
+  }
+  if(!chain.length) return '';
+
+  let parts = [person.name, person.gender==='female' ? 'بنت' : 'بن', chain[0].name];
+  for(let i=1; i<chain.length; i++){
+    const conn = chain[i-1].gender==='female' ? 'بنت' : 'بن';
+    parts.push(conn, chain[i].name);
+  }
+  return parts.join(' ');
+}
+
+/* ══════════════════════════════════
+   COLLAPSE LOGIC
+══════════════════════════════════ */
+function toggleCollapse(id) {
+  if (collapsedNodes.has(id)) {
+    collapsedNodes.delete(id);
+  } else {
+    collapsedNodes.add(id);
+  }
+  renderTree(); 
+}
+
+/* ══════════════════════════════════
+   ORDERING CHILDREN
+══════════════════════════════════ */
+function openOrderChildren() {
+  const parentId = currentProfileId;
+  if (!parentId) return;
+  
+  const kids = people.filter(x => x.fatherId === parentId || x.motherId === parentId)
+                     .sort((a, b) => (a.order || 0) - (b.order || 0));
+                     
+  const listDiv = document.getElementById('orderChildrenList');
+  listDiv.innerHTML = '';
+  
+  kids.forEach(k => {
+    listDiv.innerHTML += `
+      <div class="child-order-row" style="display:flex; gap:10px; align-items:center; margin-bottom:10px; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+        <span style="flex:1; color:#f5e8c8; font-size:0.9rem; font-weight:600;">${getDisplayName(k)}</span>
+        <input type="number" class="child-order-input" data-id="${k.id}" value="${k.order || 0}" style="width:70px; padding:6px; border-radius:6px; text-align:center; background:rgba(0,0,0,0.3); color:var(--gold); border:1px solid rgba(201,168,76,0.4); font-weight:bold;">
+      </div>
+    `;
+  });
+  
+  closeProfile();
+  document.getElementById('orderChildrenOverlay').classList.add('open');
+}
+
+function closeOrderChildren() {
+  document.getElementById('orderChildrenOverlay').classList.remove('open');
+}
+
+async function saveChildrenOrder() {
+  if (!isAdmin) return;
+  const btn = document.getElementById('saveOrderBtn');
+  btn.disabled = true; btn.innerHTML = '⏳ جاري الحفظ...';
+  
+  try {
+    const inputs = document.querySelectorAll('.child-order-input');
+    const promises = [];
+    inputs.forEach(inp => {
+       const id = inp.dataset.id;
+       const order = parseInt(inp.value) || 0;
+       promises.push(window._dbUpdatePerson(id, { order: order }));
+    });
+    
+    await Promise.all(promises);
+    closeOrderChildren();
+    showToast('✅ تم حفظ الترتيب بنجاح');
+  } catch(e) {
+    showToast('❌ خطأ في الحفظ: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.innerHTML = '💾 حفظ الترتيب';
+  }
+}
+
+/* ══════════════════════════════════
+   TREE BUILDER (BOTTOM-UP LOGIC)
+══════════════════════════════════ */
+function buildTree(focusRootId = null){
+  const ch={}, roots=[];
+  
+  let validNodes = new Set();
+  if(focusRootId) {
+    function addSub(id) {
+      validNodes.add(id);
+      people.filter(x => x.fatherId === id || x.motherId === id).forEach(child => addSub(child.id));
+    }
+    addSub(focusRootId);
+  }
+
+  people.forEach(p=>{
+    if(focusRootId && !validNodes.has(p.id)) return;
+
+    ch[p.id]=ch[p.id]||[];
+    const parentId = p.fatherId || p.motherId || null;
+    
+    if(parentId && (!focusRootId || validNodes.has(parentId))){
+        ch[parentId]=ch[parentId]||[];
+        ch[parentId].push(p.id);
+    } else {
+        roots.push(p.id);
+    }
+  });
+
   Object.keys(ch).forEach(k=>ch[k].sort((a,b)=>{
-    const pa=people.find(x=>x.id===a),pb=people.find(x=>x.id===b);
+    const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
+    const diff = (pb.order || 0) - (pa.order || 0);
+    if(diff !== 0) return diff;
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   }));
+  
   roots.sort((a,b)=>{
-    const pa=people.find(x=>x.id===a),pb=people.find(x=>x.id===b);
+    const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
+    const diff = (pb.order || 0) - (pa.order || 0);
+    if(diff !== 0) return diff;
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   });
+
   const sw={};
   function calcW(id){
-    const c=ch[id]||[];
+    const c = collapsedNodes.has(id) ? [] : (ch[id]||[]);
     if(!c.length){sw[id]=NW;return NW;}
     const t=c.reduce((s,x)=>s+calcW(x),0)+HG*(c.length-1);
     sw[id]=Math.max(NW,t);return sw[id];
   }
   roots.forEach(r=>calcW(r));
+  
   const pos={};
   function place(id,x,y){
-    const c=ch[id]||[];pos[id]={x,y};
+    const c = collapsedNodes.has(id) ? [] : (ch[id]||[]);
+    pos[id]={x,y};
     if(!c.length)return;
     const tw=c.reduce((s,x)=>s+sw[x],0)+HG*(c.length-1);
     let cx=x-tw/2;
     c.forEach(cid=>{place(cid,cx+sw[cid]/2,y+NH+VG);cx+=sw[cid]+HG;});
   }
   let off=0;roots.forEach(r=>{place(r,off+sw[r]/2,TP);off+=sw[r]+HG;});
-  let mx=0,my=0;
-  Object.values(pos).forEach(({x,y})=>{if(x+NW/2>mx)mx=x+NW/2;if(y+NH>my)my=y+NH;});
-  return{pos,ch,canvasW:mx+20,canvasH:my+40};
+
+  // قلب المحور العمودي لتصبح الشجرة من الأسفل إلى الأعلى (كما هو مطلوب للطبيعة)
+  let maxDepthY = 0;
+  Object.values(pos).forEach(({y}) => { if(y > maxDepthY) maxDepthY = y; });
+  Object.values(pos).forEach(p => { 
+    p.y = maxDepthY - p.y + TP; 
+  });
+
+  let mx=0, my=maxDepthY + NH + TP;
+  Object.values(pos).forEach(({x})=>{if(x+NW/2>mx)mx=x+NW/2;});
+  
+  return{pos, ch, canvasW:mx+20, canvasH:my+20};
 }
 
-/* ══════════════════════════════════
-   RENDER
-══════════════════════════════════ */
-function renderTree(){
+function renderTree(focusRootId = null){
   const canvas=document.getElementById('treeCanvas');
   const svg=document.getElementById('treeSvg');
   Array.from(canvas.children).forEach(el=>{if(el!==svg)el.remove();});
   svg.innerHTML='';nodePos={};
 
   if(!people.length){
-    canvas.style.width='100%';canvas.style.height='260px';
     canvas.innerHTML=`<svg class="tree-svg" id="treeSvg"></svg>
       <div class="empty-state" style="padding-top:60px">
         <div class="tree-icon">🌱</div>
-        <p>لا يوجد أفراد بعد.<br>اضغط <strong>"+ إضافة فرد"</strong></p>
+        <p>لا يوجد أفراد بعد.<br>اضغط <strong>"+ إضافة فرد وأبنائه"</strong></p>
       </div>`;
     return;
   }
-  const{pos,ch,canvasW,canvasH}=buildTree();
+  
+  const{pos,ch,canvasW,canvasH}=buildTree(focusRootId);
   canvas.style.width=canvasW+'px';canvas.style.height=canvasH+'px';
 
-  // SVG lines
   people.forEach(p=>{
+    if(!pos[p.id]) return;
+    if(collapsedNodes.has(p.id)) return;
+
     const c=ch[p.id]||[];if(!c.length)return;
-    const px=pos[p.id].x,py=pos[p.id].y+NH;
+    const px=pos[p.id].x, py=pos[p.id].y; 
     c.forEach(cid=>{
-      const cx=pos[cid].x,cy=pos[cid].y,midY=py+VG/2;
+      if(!pos[cid]) return;
+      const cx=pos[cid].x, cy=pos[cid].y + NH; 
+      const midY = py - VG/2; 
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d',`M${px},${py} L${px},${midY} L${cx},${midY} L${cx},${cy}`);
+      
+      // استخدام خط منحني (Cubic Bezier Curve) باللون البني ليحاكي أغصان الشجرة
+      path.setAttribute('d',`M${px},${py} C${px},${midY} ${cx},${midY} ${cx},${cy}`);
       path.setAttribute('fill','none');
-      path.setAttribute('stroke','rgba(201,168,76,0.4)');
-      path.setAttribute('stroke-width','1.5');
-      path.setAttribute('stroke-dasharray','4,3');
+      path.setAttribute('stroke','#5D4037'); /* لون بني خشبي */
+      path.setAttribute('stroke-width','4.5'); /* خط سميك كالغصن */
       svg.appendChild(path);
     });
   });
 
-  // Nodes
   people.forEach(p=>{
+    if(!pos[p.id]) return;
     const{x,y}=pos[p.id];nodePos[p.id]={x,y,w:NW,h:NH};
     const wrap=document.createElement('div');
     wrap.className='node-wrap';wrap.dataset.id=p.id;
     wrap.style.left=x+'px';wrap.style.top=y+'px';
-    const father=p.fatherId?people.find(q=>q.id===p.fatherId):null;
     const gc=p.gender==='male'?'boy':'girl';
     const photoHTML=p.photo
       ?`<img class="node-photo" src="${p.photo}" loading="lazy">`
       :`<div class="node-photo-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
+    
+    const isRoot = !(p.fatherId || p.motherId);
+    
+    const hasChildren = ch[p.id] && ch[p.id].length > 0;
+    const isCollapsed = collapsedNodes.has(p.id);
+    const collapseBtnHTML = hasChildren ? `<button class="collapse-btn" title="${isCollapsed ? 'إظهار الفروع' : 'إخفاء الفروع'}" onclick="event.stopPropagation(); toggleCollapse('${p.id}')">${isCollapsed ? '➕' : '➖'}</button>` : '';
+
     wrap.innerHTML=`
+      ${collapseBtnHTML}
       ${isAdmin?`<div class="node-actions">
         <button class="act-btn act-edit"   onclick="event.stopPropagation();openEdit('${p.id}')">✏️</button>
         <button class="act-btn act-delete" onclick="event.stopPropagation();deletePerson('${p.id}')">🗑</button>
       </div>`:''}
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
-        <div class="node-name">${esc(p.name)}</div>
-        <div class="node-meta">${father?'ابن '+esc(father.name):'🌱 الجذر'}</div>
+        <div class="node-name">${esc(getDisplayName(p))}</div>
+        ${isRoot ? `<div class="node-meta" style="color:#2E7D32">🌱 الأساس</div>` : ''}
       </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
     canvas.appendChild(wrap);
   });
+  
+  if (firstRender && !focusRootId) {
+    mapZoomFit(canvasW, canvasH);
+    firstRender = false;
+  }
 }
 
 /* ══════════════════════════════════
-   PROFILE VIEWER
+   HIGH-RES EXPORT
+══════════════════════════════════ */
+async function exportTree(rootId = null) {
+  closeProfile(); 
+  showToast('⏳ جاري تجهيز الصورة عالية الدقة، يرجى الانتظار...');
+
+  const canvasEl = document.getElementById('treeCanvas');
+  const oldTransform = canvasEl.style.transform;
+  const oldScale = mapScale, oldPanX = mapPanX, oldPanY = mapPanY;
+
+  renderTree(rootId);
+  canvasEl.style.transform = 'none';
+
+  await new Promise(r => setTimeout(r, 600));
+
+  try {
+    const canvas = await html2canvas(canvasEl, {
+      backgroundColor: '#E0F6FF', // لون سماء فاتح للتصدير
+      scale: 2, 
+      useCORS: true,
+      logging: false
+    });
+
+    const link = document.createElement('a');
+    const personName = rootId ? (people.find(p=>p.id===rootId)?.name || 'الفرد') : 'العائلة';
+    link.download = `شجرة_${personName}.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast('✅ تم تحميل الصورة بنجاح!');
+  } catch (err) {
+    showToast('❌ حدث خطأ أثناء التقاط الصورة');
+    console.error(err);
+  }
+
+  renderTree();
+  mapScale = oldScale; mapPanX = oldPanX; mapPanY = oldPanY;
+  updateMapTransform();
+}
+
+/* ══════════════════════════════════
+   PROFILE & LIGHTBOX
 ══════════════════════════════════ */
 function showProfile(id){
   const p=people.find(x=>x.id===id);if(!p)return;
-  const father=p.fatherId?people.find(x=>x.id===p.fatherId):null;
-  const childCount=people.filter(x=>x.fatherId===id).length;
+  currentProfileId = id;
+  const childCount=people.filter(x=>x.fatherId===id||x.motherId===id).length;
   document.getElementById('profileImgWrap').innerHTML=p.photo
-    ?`<img class="profile-img" src="${p.photo}">`
+    ?`<img class="profile-img" src="${p.photo}" onclick="openLightbox(this.src);event.stopPropagation()" title="اضغط لتكبير الصورة">`
     :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
-  document.getElementById('profileName').textContent=p.name;
-  document.getElementById('profileMeta').textContent=father?'ابن: '+father.name:'🌱 جذر الشجرة';
-  document.getElementById('profileMeta2').textContent=childCount?`عدد الأبناء: ${childCount}`:'';
+  document.getElementById('profileName').textContent=getDisplayName(p);
+  
+  document.getElementById('profileMeta').textContent=getAncestryLine(p);
+  document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء في الشجرة: '+childCount:'';
+  
+  document.getElementById('orderChildrenBtn').style.display = (isAdmin && childCount > 0) ? 'inline-flex' : 'none';
+  document.getElementById('exportSubBtn').style.display = isAdmin ? 'inline-flex' : 'none';
+
   document.getElementById('profileOverlay').classList.add('open');
 }
 function closeProfile(){document.getElementById('profileOverlay').classList.remove('open');}
 
-/* ══════════════════════════════════
-   DRAG & DROP
-══════════════════════════════════ */
-let dragState=null;
-function attachDrag(wrap){
-  const card=wrap.querySelector('.node-card');
-  card.addEventListener('touchstart',onDragStart,{passive:false});
-  card.addEventListener('mousedown',onDragStart);
+function openLightbox(src){
+  const lb=document.getElementById('lightboxOverlay');
+  const img=document.getElementById('lightboxImg');
+  img.src=src;
+  lb.classList.add('open');
+  document.body.style.overflow='hidden';
 }
-function onDragStart(e){
-  if(e.target.closest('.act-btn'))return;
-  e.preventDefault();
-  const wrap=e.currentTarget.closest('.node-wrap');
-  const id=wrap.dataset.id;
-  const p=people.find(x=>x.id===id);if(!p)return;
-  const t=e.touches?e.touches[0]:e;
-  const ghost=document.getElementById('dragGhost');
-  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:102px;min-height:116px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;border-radius:50% 50% 46% 46%/55% 55% 45% 45%;box-shadow:0 8px 30px rgba(0,0,0,.6)"><div class="node-name">${esc(p.name)}</div></div>`;
-  ghost.style.display='block';
-  ghost.style.left=(t.clientX-51)+'px';ghost.style.top=(t.clientY-58)+'px';
-  wrap.classList.add('dragging');
-  dragState={id,wrap,startX:t.clientX,startY:t.clientY,moved:false};
-  if(e.touches){
-    document.addEventListener('touchmove',onDragMove,{passive:false});
-    document.addEventListener('touchend',onDragEnd);
-    document.addEventListener('touchcancel',onDragEnd);
-  }else{
-    document.addEventListener('mousemove',onDragMove);
-    document.addEventListener('mouseup',onDragEnd);
-  }
+function closeLightbox(){
+  document.getElementById('lightboxOverlay').classList.remove('open');
+  document.body.style.overflow='';
 }
-function onDragMove(e){
-  if(!dragState)return;e.preventDefault();
-  const t=e.touches?e.touches[0]:e;
-  if(Math.abs(t.clientX-dragState.startX)>5||Math.abs(t.clientY-dragState.startY)>5)dragState.moved=true;
-  const ghost=document.getElementById('dragGhost');
-  ghost.style.left=(t.clientX-51)+'px';ghost.style.top=(t.clientY-58)+'px';
-  document.querySelectorAll('.drag-target').forEach(el=>el.classList.remove('drag-target'));
-  const tgt=getDropTarget(t.clientX,t.clientY,dragState.id);
-  if(tgt)tgt.classList.add('drag-target');
-}
-async function onDragEnd(e){
-  if(!dragState)return;
-  const t=e.changedTouches?e.changedTouches[0]:e;
-  document.removeEventListener('touchmove',onDragMove);
-  document.removeEventListener('touchend',onDragEnd);
-  document.removeEventListener('touchcancel',onDragEnd);
-  document.removeEventListener('mousemove',onDragMove);
-  document.removeEventListener('mouseup',onDragEnd);
-  document.getElementById('dragGhost').style.display='none';
-  dragState.wrap.classList.remove('dragging');
-  document.querySelectorAll('.drag-target').forEach(el=>el.classList.remove('drag-target'));
-  if(dragState.moved){
-    const tgt=getDropTarget(t.clientX,t.clientY,dragState.id);
-    if(tgt){
-      const nfid=tgt.dataset.id;
-      if(nfid!==dragState.id&&!isDescendant(dragState.id,nfid)){
-        await window._dbUpdateFather(dragState.id,nfid);
-        showToast('✅ تم تغيير النسب');
-      }else showToast('⚠️ لا يمكن جعل الأب ابناً له');
-    }
-  }else{
-    document.querySelectorAll('.node-wrap.show-acts').forEach(w=>w.classList.remove('show-acts'));
-    dragState.wrap.classList.add('show-acts');
-  }
-  dragState=null;
-}
-function getDropTarget(cx,cy,excl){
-  const rect=document.getElementById('treeCanvas').getBoundingClientRect();
-  const lx=cx-rect.left,ly=cy-rect.top;
-  for(const[id,p]of Object.entries(nodePos)){
-    if(id===excl)continue;
-    if(lx>=p.x-NW/2&&lx<=p.x+NW/2&&ly>=p.y&&ly<=p.y+NH)
-      return document.querySelector(`.node-wrap[data-id="${id}"]`);
-  }
-  return null;
-}
-function isDescendant(ancId,testId){
-  const v=new Set();
-  function chk(id){
-    if(v.has(id))return false;v.add(id);
-    const p=people.find(x=>x.id===id);
-    if(!p||!p.fatherId)return false;
-    if(p.fatherId===ancId)return true;
-    return chk(p.fatherId);
-  }
-  return chk(testId);
-}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 
 /* ══════════════════════════════════
-   PHOTO
+   PHOTO HELPERS
 ══════════════════════════════════ */
 function handlePhoto(input,prevId,dataId){
   const file=input.files[0];if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const MAX=180;let w=img.width,h=img.height;
-      if(w>h){if(w>MAX){h=h*MAX/w;w=MAX;}}else{if(h>MAX){w=w*MAX/h;h=MAX;}}
-      const cv=document.createElement('canvas');cv.width=w;cv.height=h;
-      cv.getContext('2d').drawImage(img,0,0,w,h);
-      const c=cv.toDataURL('image/jpeg',0.65);
-      document.getElementById(dataId).value=c;
-      const prev=document.getElementById(prevId);
-      prev.innerHTML=`<img src="${c}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
-      const rid=dataId==='addPhotoData'?'addPhotoRemove':'editPhotoRemove';
-      document.getElementById(rid).style.display='inline-block';
-    };
-    img.src=e.target.result;
+    const dataUrl=e.target.result;
+    document.getElementById(dataId).value=dataUrl;
+    const prev=document.getElementById(prevId);
+    prev.innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    const rid=dataId==='addPhotoData'?'addPhotoRemove':'editPhotoRemove';
+    document.getElementById(rid).style.display='inline-block';
   };
   reader.readAsDataURL(file);input.value='';
 }
@@ -611,106 +983,187 @@ function removePhoto(prevId,dataId,removeId){
   document.getElementById(removeId).style.display='none';
 }
 
-/* ══════════════════════════════════
-   ADMIN
-══════════════════════════════════ */
-function toggleAdmin(){
-  if(!isAdmin){
-    const pw=prompt('أدخل كلمة مرور الإدارة:');
-    if(pw===ADMIN_PASSWORD){
-      isAdmin=true;
-      document.getElementById('adminBtn').textContent='🔓 إيقاف الإدارة';
-      document.getElementById('adminBadge').style.display='block';
-      document.getElementById('clearBtn').style.display='inline-flex';
-      document.getElementById('dragInfo').classList.add('show');
-      showToast('✅ تم تفعيل وضع الإدارة');
-      renderTree();
-    }else if(pw!==null)showToast('❌ كلمة المرور خاطئة');
-  }else{
-    isAdmin=false;
-    document.getElementById('adminBtn').textContent='🔐 وضع الإدارة';
-    document.getElementById('adminBadge').style.display='none';
-    document.getElementById('clearBtn').style.display='none';
-    document.getElementById('dragInfo').classList.remove('show');
-    renderTree();
-  }
+function handleChildPhoto(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const dataUrl=e.target.result;
+    const wrapper=input.closest('.child-photo-wrapper');
+    wrapper.querySelector('.child-photo-data').value=dataUrl;
+    wrapper.querySelector('.child-photo-prev').innerHTML=`<img src="${dataUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+  };
+  reader.readAsDataURL(file);input.value='';
 }
 
 /* ══════════════════════════════════
-   ADD
+   ADD MODAL LOGIC 
 ══════════════════════════════════ */
+function addChildField() {
+  const list = document.getElementById('childrenList');
+  const div = document.createElement('div');
+  div.className = 'child-row';
+  div.innerHTML = `
+    <div class="child-photo-wrapper" style="position:relative; width:34px; height:34px; flex-shrink:0; cursor:pointer;" onclick="this.querySelector('input[type=file]').click()" title="إضافة صورة للابن">
+      <div class="child-photo-prev" style="width:100%; height:100%; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid rgba(201,168,76,.4); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:.8rem;">📷</div>
+      <input type="file" accept="image/*" style="display:none" onchange="handleChildPhoto(this)">
+      <input type="hidden" class="child-photo-data">
+    </div>
+    <input type="text" placeholder="الاسم الأول" class="child-name">
+    <select class="child-gender">
+      <option value="male">ذكر</option>
+      <option value="female">أنثى</option>
+    </select>
+    <input type="text" placeholder="اسم العائلة (اختياري)" class="child-family">
+    <button type="button" onclick="this.parentElement.remove()" class="child-del" title="حذف">✕</button>
+  `;
+  list.appendChild(div);
+}
+
 function openAddModal(){
   formGender='male';
   document.getElementById('inputName').value='';
+  document.getElementById('inputFamilyName').value='';
+  document.getElementById('childrenList').innerHTML='';
   document.getElementById('btnBoy').classList.add('active');
   document.getElementById('btnGirl').classList.remove('active');
   document.getElementById('fatherValue').value='';
-  document.getElementById('fatherDisplay').textContent='— بدون أب (جذر الشجرة) —';
+  document.getElementById('fatherDisplay').textContent='— اختر الأب —';
+  document.getElementById('fatherDisplay').style.borderColor='';
   document.getElementById('fatherSelect').classList.remove('open');
+  document.getElementById('motherValue').value='';
+  document.getElementById('motherDisplay').textContent='— اختر الأم —';
+  document.getElementById('motherDisplay').style.borderColor='';
+  document.getElementById('motherSelect').classList.remove('open');
   document.getElementById('addPhotoData').value='';
   document.getElementById('addPhotoPreview').innerHTML='📷';
   document.getElementById('addPhotoRemove').style.display='none';
   document.getElementById('photoInput').value='';
-  populateSS('fatherList',getMales(null),'',id=>{
+  
+  populateSS('fatherList', getAllPersons(null, 'father'), '', id=>{
     document.getElementById('fatherValue').value=id;
-    const fnd = people.find(p=>p.id===id);
-    document.getElementById('fatherDisplay').textContent=id?(fnd?fnd.name:''):'— بدون أب (جذر الشجرة) —';
+    const fnd=people.find(p=>p.id===id);
+    document.getElementById('fatherDisplay').textContent=id?(fnd?fnd.name:''):'— اختر الأب —';
+    document.getElementById('fatherDisplay').style.borderColor='';
     document.getElementById('fatherSelect').classList.remove('open');
+  });
+  populateSS('motherList', getAllPersons(null, 'mother'), '', id=>{
+    document.getElementById('motherValue').value=id;
+    const fnd=people.find(p=>p.id===id);
+    document.getElementById('motherDisplay').textContent=id?(fnd?fnd.name:''):'— اختر الأم —';
+    document.getElementById('motherDisplay').style.borderColor='';
+    document.getElementById('motherSelect').classList.remove('open');
   });
   document.getElementById('modalOverlay').classList.add('open');
   setTimeout(()=>document.getElementById('inputName').focus(),200);
 }
+
 function closeModal(){
   document.getElementById('modalOverlay').classList.remove('open');
   document.getElementById('fatherSelect').classList.remove('open');
 }
+
 function setGender(g){
   formGender=g;
   document.getElementById('btnBoy').classList.toggle('active',g==='male');
   document.getElementById('btnGirl').classList.toggle('active',g==='female');
 }
+
 async function savePerson(){
   const name=document.getElementById('inputName').value.trim();
-  if(!name){showToast('⚠️ الرجاء إدخال الاسم');return;}
+  const familyName=document.getElementById('inputFamilyName').value.trim();
+  
+  if(!name){showToast('⚠️ الرجاء إدخال الاسم الأول');return;}
+  const fatherId=document.getElementById('fatherValue').value||null;
+  const motherId=document.getElementById('motherValue').value||null;
+  if(!fatherId && !motherId){
+    document.getElementById('fatherDisplay').style.borderColor='#e74c3c';
+    document.getElementById('motherDisplay').style.borderColor='#e74c3c';
+    showToast('⚠️ يجب اختيار الأب أو الأم لربطه بالشجرة');
+    return;
+  }
   if(!window._dbAddPerson){showToast('❌ Firebase غير مهيأ');return;}
+  
   const btn=document.getElementById('saveBtn');
   btn.disabled=true;btn.innerHTML='⏳ جاري الحفظ…';
+  
   try{
-    await window._dbAddPerson({
-      name,gender:formGender,
-      fatherId:document.getElementById('fatherValue').value||null,
+    const docRef = await window._dbAddPerson({
+      name,
+      gender:formGender,
+      familyName: familyName || null,
+      fatherId, motherId,
+      order: 0,
       photo:document.getElementById('addPhotoData').value||null,
       createdAt:Date.now()
     });
-    closeModal();showToast('✅ تم إضافة '+name);
-  }catch(e){showToast('❌ خطأ: '+e.message);}
-  btn.disabled=false;btn.innerHTML='💾 حفظ';
+    
+    const newPersonId = docRef.id;
+
+    const childRows = document.querySelectorAll('.child-row');
+    for(const row of childRows){
+       const cName = row.querySelector('.child-name').value.trim();
+       const cFamily = row.querySelector('.child-family').value.trim();
+       const cGender = row.querySelector('.child-gender').value;
+       const cPhoto = row.querySelector('.child-photo-data').value || null;
+
+       if(cName) {
+         await window._dbAddPerson({
+           name: cName,
+           gender: cGender,
+           familyName: cFamily || null,
+           fatherId: formGender === 'male' ? newPersonId : null,
+           motherId: formGender === 'female' ? newPersonId : null,
+           order: 0,
+           photo: cPhoto,
+           createdAt: Date.now()
+         });
+       }
+    }
+
+    closeModal(); showToast('✅ تم الحفظ والإضافة للشجرة بنجاح');
+  }catch(e){
+    showToast('❌ خطأ: '+e.message);
+  }finally{
+    btn.disabled=false;btn.innerHTML='💾 حفظ';
+  }
 }
 
 /* ══════════════════════════════════
-   EDIT
+   EDIT MODAL LOGIC
 ══════════════════════════════════ */
 function openEdit(id){
   if(!isAdmin)return;
   const p=people.find(x=>x.id===id);if(!p)return;
   editingId=id;editGender=p.gender;
   document.getElementById('editName').value=p.name;
+  document.getElementById('editFamilyName').value=p.familyName||'';
+  
   document.getElementById('editBtnBoy').classList.toggle('active',p.gender==='male');
   document.getElementById('editBtnGirl').classList.toggle('active',p.gender==='female');
   const fp=p.fatherId?people.find(x=>x.id===p.fatherId):null;
   document.getElementById('editFatherValue').value=p.fatherId||'';
   document.getElementById('editFatherDisplay').textContent=fp?fp.name:'— بدون أب —';
   document.getElementById('editFatherSelect').classList.remove('open');
+  const mp=p.motherId?people.find(x=>x.id===p.motherId):null;
+  document.getElementById('editMotherValue').value=p.motherId||'';
+  document.getElementById('editMotherDisplay').textContent=mp?mp.name:'— بدون أم —';
+  document.getElementById('editMotherSelect').classList.remove('open');
   document.getElementById('editPhotoData').value=p.photo||'';
   document.getElementById('editPhotoInput').value='';
   const prev=document.getElementById('editPhotoPreview');
   prev.innerHTML=p.photo?`<img src="${p.photo}" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`:'📷';
   document.getElementById('editPhotoRemove').style.display=p.photo?'inline-block':'none';
-  populateSS('editFatherList',getMales(id),p.fatherId||'',nid=>{
+  populateSS('editFatherList', getAllPersons(id,'father'), p.fatherId||'', nid=>{
     document.getElementById('editFatherValue').value=nid;
-    const fnd2 = people.find(q=>q.id===nid);
+    const fnd2=people.find(q=>q.id===nid);
     document.getElementById('editFatherDisplay').textContent=nid?(fnd2?fnd2.name:''):'— بدون أب —';
     document.getElementById('editFatherSelect').classList.remove('open');
+  });
+  populateSS('editMotherList', getAllPersons(id,'mother'), p.motherId||'', nid=>{
+    document.getElementById('editMotherValue').value=nid;
+    const fnd3=people.find(q=>q.id===nid);
+    document.getElementById('editMotherDisplay').textContent=nid?(fnd3?fnd3.name:''):'— بدون أم —';
+    document.getElementById('editMotherSelect').classList.remove('open');
   });
   document.getElementById('editOverlay').classList.add('open');
 }
@@ -732,25 +1185,143 @@ async function saveEdit(){
   try{
     await window._dbUpdatePerson(editingId,{
       name,gender:editGender,
+      familyName: document.getElementById('editFamilyName').value.trim() || null,
       fatherId:document.getElementById('editFatherValue').value||null,
+      motherId:document.getElementById('editMotherValue').value||null,
       photo:document.getElementById('editPhotoData').value||null,
     });
     closeEditModal();showToast('✅ تم تحديث البيانات');
   }catch(e){showToast('❌ خطأ: '+e.message);}
-  btn.disabled=false;btn.innerHTML='✅ تحديث';
+  finally{btn.disabled=false;btn.innerHTML='✅ تحديث';}
 }
 
 /* ══════════════════════════════════
-   DELETE / CLEAR
+   DRAG, DELETE & UTILS
 ══════════════════════════════════ */
+let dragState=null;
+function attachDrag(wrap){
+  const card=wrap.querySelector('.node-card');
+  card.addEventListener('touchstart',onDragStart,{passive:false});
+  card.addEventListener('mousedown',onDragStart);
+}
+function onDragStart(e){
+  if(e.target.closest('.act-btn') || e.target.closest('.collapse-btn'))return;
+  e.preventDefault();
+  const wrap=e.currentTarget.closest('.node-wrap');
+  const id=wrap.dataset.id;
+  const p=people.find(x=>x.id===id);if(!p)return;
+  const t=e.touches?e.touches[0]:e;
+  const ghost=document.getElementById('dragGhost');
+  
+  // مطابقة الـ Ghost لثيم الطبيعة الجديد
+  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:120px;min-height:125px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 8px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);background:linear-gradient(145deg, #fffcf5, #f5ecd3);border:3px solid #d4c4a1"><div class="node-name" style="color:#3e2723; font-weight:800; font-size:0.85rem">${esc(p.name)}</div></div>`;
+  ghost.style.display='block';
+  ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
+  wrap.classList.add('dragging');
+  dragState={id,wrap,startX:t.clientX,startY:t.clientY,moved:false};
+  if(e.touches){
+    document.addEventListener('touchmove',onDragMove,{passive:false});
+    document.addEventListener('touchend',onDragEnd);
+    document.addEventListener('touchcancel',onDragEnd);
+  }else{
+    document.addEventListener('mousemove',onDragMove);
+    document.addEventListener('mouseup',onDragEnd);
+  }
+}
+function onDragMove(e){
+  if(!dragState)return;e.preventDefault();
+  const t=e.touches?e.touches[0]:e;
+  if(Math.abs(t.clientX-dragState.startX)>5||Math.abs(t.clientY-dragState.startY)>5)dragState.moved=true;
+  const ghost=document.getElementById('dragGhost');
+  ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
+  document.querySelectorAll('.drag-target').forEach(el=>el.classList.remove('drag-target'));
+  const tgt=getDropTarget(t.clientX,t.clientY,dragState.id);
+  if(tgt)tgt.classList.add('drag-target');
+}
+async function onDragEnd(e){
+  if(!dragState)return;
+  const t=e.changedTouches?e.changedTouches[0]:e;
+  document.removeEventListener('touchmove',onDragMove);
+  document.removeEventListener('touchend',onDragEnd);
+  document.removeEventListener('touchcancel',onDragEnd);
+  document.removeEventListener('mousemove',onDragMove);
+  document.removeEventListener('mouseup',onDragEnd);
+  document.getElementById('dragGhost').style.display='none';
+  dragState.wrap.classList.remove('dragging');
+  document.querySelectorAll('.drag-target').forEach(el=>el.classList.remove('drag-target'));
+  if(dragState.moved){
+    const tgt=getDropTarget(t.clientX,t.clientY,dragState.id);
+    if(tgt){
+      const nfid=tgt.dataset.id;
+      if(nfid!==dragState.id&&!isDescendant(dragState.id,nfid)){
+        const np = people.find(x=>x.id===nfid);
+        if(np.gender==='male') await window._dbUpdateFather(dragState.id,nfid);
+        else await window._dbUpdateMother(dragState.id,nfid);
+        showToast('✅ تم تغيير النسب');
+      }else showToast('⚠️ لا يمكن جعل الأب ابناً له');
+    }
+  }else{
+    document.querySelectorAll('.node-wrap.show-acts').forEach(w=>w.classList.remove('show-acts'));
+    dragState.wrap.classList.add('show-acts');
+  }
+  dragState=null;
+}
+function getDropTarget(cx,cy,excl){
+  const rect=document.getElementById('treeCanvas').getBoundingClientRect();
+  const lx=(cx-rect.left)/mapScale, ly=(cy-rect.top)/mapScale;
+  for(const[id,p]of Object.entries(nodePos)){
+    if(id===excl)continue;
+    if(lx>=p.x-NW/2&&lx<=p.x+NW/2&&ly>=p.y&&ly<=p.y+NH)
+      return document.querySelector(`.node-wrap[data-id="${id}"]`);
+  }
+  return null;
+}
+function isDescendant(ancId,testId){
+  const v=new Set();
+  function chk(id){
+    if(v.has(id))return false;v.add(id);
+    const p=people.find(x=>x.id===id);
+    if(!p)return false;
+    if(p.fatherId===ancId || p.motherId===ancId)return true;
+    return chk(p.fatherId) || chk(p.motherId);
+  }
+  return chk(testId);
+}
+
+function toggleAdmin(){
+  if(!isAdmin){
+    const pw=prompt('أدخل كلمة مرور الإدارة:');
+    if(pw===ADMIN_PASSWORD){
+      isAdmin=true;
+      document.getElementById('adminBtn').textContent='🔓 إيقاف الإدارة';
+      document.getElementById('adminBadge').style.display='block';
+      document.getElementById('clearBtn').style.display='inline-flex';
+      document.getElementById('exportBtn').style.display='inline-flex';
+      document.getElementById('dragInfo').classList.add('show');
+      showToast('✅ تم تفعيل وضع الإدارة');
+      renderTree();
+    }else if(pw!==null)showToast('❌ كلمة المرور خاطئة');
+  }else{
+    isAdmin=false;
+    document.getElementById('adminBtn').textContent='🔐 وضع الإدارة';
+    document.getElementById('adminBadge').style.display='none';
+    document.getElementById('clearBtn').style.display='none';
+    document.getElementById('exportBtn').style.display='none'; 
+    document.getElementById('dragInfo').classList.remove('show');
+    renderTree();
+  }
+}
+
 async function deletePerson(id){
   if(!isAdmin)return;
   const p=people.find(x=>x.id===id);
   if(!confirm(`هل تريد حذف "${p.name}"؟`))return;
   try{
-    // detach children
-    const kids=people.filter(x=>x.fatherId===id);
-    for(const k of kids)await window._dbUpdateFather(k.id,null);
+    const kids=people.filter(x=>x.fatherId===id || x.motherId===id);
+    for(const k of kids){
+       if(k.fatherId===id) await window._dbUpdateFather(k.id,null);
+       if(k.motherId===id) await window._dbUpdateMother(k.id,null);
+    }
     await window._dbDeletePerson(id);
     showToast('🗑 تم حذف '+p.name);
   }catch(e){showToast('❌ خطأ: '+e.message);}
@@ -762,27 +1333,31 @@ async function clearConfirm(){
   catch(e){showToast('❌ خطأ: '+e.message);}
 }
 
-/* ══════════════════════════════════
-   SEARCHABLE SELECT
-══════════════════════════════════ */
-function getMales(excl){
-  return people.filter(p=>p.gender==='male'&&p.id!==excl)
+function getAllPersons(excl, role){
+  const gender = role==='mother' ? 'female' : 'male';
+  return people.filter(p=>p.gender===gender && p.id!==excl)
     .sort((a,b)=>a.name.localeCompare(b.name,'ar'))
     .map(p=>{
       const chain=[];let cur=p;
-      for(let i=0;i<4&&cur;i++){chain.push(cur.name);cur=cur.fatherId?people.find(x=>x.id===cur.fatherId):null;}
+      for(let i=0;i<4&&cur;i++){
+        chain.push(cur.name);
+        cur=cur.fatherId?people.find(x=>x.id===cur.fatherId):null;
+      }
       return{id:p.id,name:p.name,sub:chain.slice(1).join(' ← ')};
     });
 }
 const ssCB={};
-function populateSS(listId,males,curId,cb){ssCB[listId]=cb;renderSSItems(listId,males,curId,'');}
-function renderSSItems(listId,males,curId,q){
+function populateSS(listId,persons,curId,cb){ssCB[listId]=cb;renderSSItems(listId,persons,curId,'');}
+function renderSSItems(listId,persons,curId,q){
   const list=document.getElementById(listId);list.innerHTML='';
-  const none=document.createElement('div');none.className='ss-item'+((!curId)?' active':'');
-  none.textContent='— بدون أب (جذر الشجرة) —';none.onclick=()=>{if(ssCB[listId]) ssCB[listId]('');};list.appendChild(none);
+  const isEditList = listId.startsWith('edit');
+  if(isEditList){
+    const none=document.createElement('div');none.className='ss-item'+((!curId)?' active':'');
+    none.textContent='— بدون —';none.onclick=()=>{if(ssCB[listId]) ssCB[listId]('');};list.appendChild(none);
+  }
   const ql=q.toLowerCase();
-  males.forEach(m=>{
-    if(q&&!m.name.toLowerCase().includes(ql)&&!m.sub.toLowerCase().includes(ql))return;
+  persons.forEach(m=>{
+    if(q&&!m.name.toLowerCase().includes(ql)&&!(m.sub||'').toLowerCase().includes(ql))return;
     const item=document.createElement('div');item.className='ss-item'+(m.id===curId?' active':'');
     item.dataset.id=m.id;
     const ns=document.createElement('span');ns.textContent=m.name;item.appendChild(ns);
@@ -793,19 +1368,28 @@ function renderSSItems(listId,males,curId,q){
 function toggleSS(id){
   const w=document.getElementById(id),was=w.classList.contains('open');
   document.querySelectorAll('.searchable-select.open').forEach(el=>el.classList.remove('open'));
-  if(!was){w.classList.add('open');const s=id==='fatherSelect'?'fatherSearch':'editFatherSearch';setTimeout(()=>{const el=document.getElementById(s);if(el){el.value='';el.focus();}},40);}
+  if(!was){
+    w.classList.add('open');
+    const searchMap={
+      fatherSelect:'fatherSearch', motherSelect:'motherSearch',
+      editFatherSelect:'editFatherSearch', editMotherSelect:'editMotherSearch'
+    };
+    const s=searchMap[id]||'fatherSearch';
+    setTimeout(()=>{const el=document.getElementById(s);if(el){el.value='';el.focus();}},40);
+  }
 }
 function filterSS(selectId,searchId){
   const searchEl=document.getElementById(searchId);
   const q=searchEl?searchEl.value.trim():'';
-  const listId=selectId==='fatherSelect'?'fatherList':'editFatherList';
-  const excl=selectId==='editFatherSelect'?editingId:null;
-  renderSSItems(listId,getMales(excl),'',q);
+  let listId, excl=null, role='father';
+  if(selectId==='fatherSelect'){listId='fatherList';role='father';}
+  else if(selectId==='motherSelect'){listId='motherList';role='mother';}
+  else if(selectId==='editFatherSelect'){listId='editFatherList';excl=editingId;role='father';}
+  else if(selectId==='editMotherSelect'){listId='editMotherList';excl=editingId;role='mother';}
+  else{listId='fatherList';}
+  renderSSItems(listId, getAllPersons(excl,role), '', q);
 }
 
-/* ══════════════════════════════════
-   UTILS
-══════════════════════════════════ */
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
@@ -815,52 +1399,75 @@ document.addEventListener('click',e=>{
 });
 document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
 document.getElementById('editOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('editOverlay'))closeEditModal();});
+
+initMapLogic();
 </script>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-<script>
-(function(){
-  try{
-    const app=firebase.initializeApp(FIREBASE_CONFIG);
-    const db=firebase.firestore();
-    db.enablePersistence({synchronizeTabs:true}).catch(()=>{});
-    setStatus('⏳ جاري الاتصال…','connecting');
-    db.collection('people').onSnapshot(
-      snap=>{people=snap.docs.map(d=>({id:d.id,...d.data()}));setStatus('🟢 متصل — '+people.length+' فرد','ok');renderTree();},
-      err=>{console.error(err);setStatus('❌ خطأ: '+err.code,'error');}
-    );
-    window._dbAddPerson    =d       =>db.collection('people').add(d);
-    window._dbUpdatePerson =(id,d)  =>db.collection('people').doc(id).update(d);
-    window._dbDeletePerson =id      =>db.collection('people').doc(id).delete();
-    window._dbUpdateFather =(id,fid)=>db.collection('people').doc(id).update({fatherId:fid||null});
-    window._dbUpdateMother =(id,mid)=>db.collection('people').doc(id).update({motherId:mid||null});
-    window._dbDeleteAll    =async()=>{const snap=await db.collection('people').get();const b=db.batch();snap.forEach(d=>b.delete(d.ref));return b.commit();};
-  }catch(e){console.error(e);setStatus('❌ خطأ في Firebase: '+e.message,'error');}
-})();
+<script type="module">
+import { initializeApp }         from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
+import { getFirestore, collection, doc, onSnapshot,
+         addDoc, updateDoc, deleteDoc, writeBatch,
+         query, orderBy }        from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-/* ── Search ── */
-function openSearch(){document.getElementById('searchOverlay').classList.add('open');setTimeout(()=>document.getElementById('searchInput').focus(),100);doSearch();}
-function closeSearch(){document.getElementById('searchOverlay').classList.remove('open');}
-function doSearch(){
-  var q=document.getElementById('searchInput').value.trim().toLowerCase();
-  var res=document.getElementById('searchResults');
-  var matches=q?people.filter(function(p){return p.name.toLowerCase().indexOf(q)>=0||(p.familyName||'').toLowerCase().indexOf(q)>=0;}):people.slice(0,20);
-  if(!matches.length){res.innerHTML='<div class="search-empty">لا توجد نتائج</div>';return;}
-  res.innerHTML=matches.map(function(p){
-    var photo=p.photo?('<img class="sri-photo" src="'+p.photo+'">'):'<div class="sri-avatar">'+(p.gender==='male'?'👦':'👧')+'</div>';
-    var anc=getAncestryLine(p)||'';
-    return '<div class="search-result-item" onclick="goToNode(''+p.id+'')">'+photo+'<div class="sri-info"><div class="sri-name">'+esc(p.name)+'</div><div class="sri-meta">'+anc+'</div></div></div>';
-  }).join('');
+const cfg = FIREBASE_CONFIG;
+const configured = cfg.apiKey && !cfg.apiKey.includes('PASTE');
+
+if(!configured){
+  document.getElementById('setupBanner').style.display='block';
+  setStatus('⚠️ Firebase غير مهيأ — اقرأ التعليمات أعلاه','error');
 }
-function goToNode(id){
-  closeSearch();
-  var p=nodePos[id];
-  if(p){var ts=document.getElementById('treeSection');mapScale=1.3;mapPanX=ts.clientWidth/2-p.x*mapScale;mapPanY=ts.clientHeight/2-(p.y+NH/2)*mapScale;updateMapTransform();}
-  setTimeout(function(){showProfile(id);},260);
+
+let db, unsubscribe;
+if(configured){
+  try{
+    const app = initializeApp(cfg);
+    db = getFirestore(app);
+    setStatus('⏳ جاري الاتصال بقاعدة البيانات…','connecting');
+    startListener();
+  }catch(e){
+    setStatus('❌ خطأ في الإعداد: '+e.message,'error');
+    console.error(e);
+  }
 }
-var _hinted=false;
-function markInteracted(){if(_hinted)return;_hinted=true;setTimeout(function(){var h=document.getElementById('vpHint');if(h)h.classList.add('gone');},1600);}
+
+function startListener(){
+  const q = query(collection(db,'people'), orderBy('createdAt'));
+  unsubscribe = onSnapshot(q,
+    snap => {
+      people = snap.docs.map(d=>({id:d.id,...d.data()}));
+      setStatus('🟢 متصل — '+people.length+' فرد','ok');
+      renderTree();
+    },
+    err => {
+      console.error(err);
+      setStatus('❌ خطأ في القراءة: '+err.message,'error');
+    }
+  );
+}
+
+window._dbAddPerson = async (data) => {
+  const docRef = await addDoc(collection(db,'people'), data);
+  return docRef;
+};
+window._dbUpdatePerson = async (id, data) => {
+  await updateDoc(doc(db,'people',id), data);
+};
+window._dbDeletePerson = async (id) => {
+  await deleteDoc(doc(db,'people',id));
+};
+window._dbDeleteAll = async () => {
+  const snap = await import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js')
+    .then(m=>m.getDocs(collection(db,'people')));
+  const batch = writeBatch(db);
+  snap.forEach(d=>batch.delete(d.ref));
+  await batch.commit();
+};
+window._dbUpdateFather = async (id, fatherId) => {
+  await updateDoc(doc(db,'people',id),{fatherId:fatherId||null});
+};
+window._dbUpdateMother = async (id, motherId) => {
+  await updateDoc(doc(db,'people',id),{motherId:motherId||null});
+};
 </script>
 
 </body>
