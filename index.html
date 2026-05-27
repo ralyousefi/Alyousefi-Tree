@@ -21,17 +21,30 @@
 </script>
 
 <style>
-:root{--gold:#c9a84c;--gold-light:#e8c97a;--boy:#3a7bd5;--boy-light:#6fa3e8;--girl:#d5619a;--girl-light:#e89bc5}
+/* ── ألوان وثيم الطبيعة ── */
+:root {
+  --gold: #c9a84c; 
+  --gold-light: #e8c97a; 
+  --brown-branch: #5D4037; 
+  --boy: #2E7D32; 
+  --girl: #C2185B; 
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:'Cairo',sans-serif;background:#0b1507;min-height:100vh;color:#f5e8c8;overflow-x:hidden;touch-action:pan-y}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 50% 110%,#1a3a0c 0%,#091004 60%,#040802 100%);z-index:0}
+body{
+  font-family:'Cairo',sans-serif;
+  background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #A8E6CF 80%, #558B2F 100%);
+  min-height:100vh;
+  color:#333;
+  overflow-x:hidden;
+  touch-action:pan-y;
+}
 .app-wrapper{position:relative;z-index:1;min-height:100vh}
 
 /* ── Header ── */
 header{text-align:center;padding:26px 16px 10px}
-header h1{font-family:'Amiri',serif;font-size:clamp(1.8rem,5vw,3rem);color:var(--gold);text-shadow:0 2px 24px rgba(201,168,76,.55)}
-header p{font-size:.85rem;color:#a09050;margin-top:4px}
-.header-line{width:160px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:10px auto 0}
+header h1{font-family:'Amiri',serif;font-size:clamp(1.8rem,5vw,3rem);color:#2E7D32;text-shadow:0 2px 10px rgba(255,255,255,0.8)}
+header p{font-size:.85rem;color:#5D4037;font-weight:bold;margin-top:4px}
+.header-line{width:160px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#5D4037,transparent);margin:10px auto 0}
 
 /* ── Buttons ── */
 .admin-bar{display:flex;justify-content:center;gap:9px;padding:10px 14px 6px;flex-wrap:wrap}
@@ -45,22 +58,23 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 
 .admin-badge{text-align:center;display:none;margin-bottom:3px}
 .admin-badge span{display:inline-block;background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:4px 14px;font-size:.76rem;color:var(--gold)}
-.drag-info{text-align:center;font-size:.72rem;color:rgba(201,168,76,.45);padding:3px;display:none}
+.drag-info{text-align:center;font-size:.72rem;color:rgba(93,64,55,.8);font-weight:bold;padding:3px;display:none}
 .drag-info.show{display:block}
 
 /* ── Status bar ── */
-.status-bar{text-align:center;padding:4px 16px;font-size:.75rem;min-height:22px}
-.status-connecting{color:#f39c12}
-.status-ok{color:#2ecc71}
-.status-error{color:#e74c3c}
+.status-bar{text-align:center;padding:4px 16px;font-size:.75rem;font-weight:bold;min-height:22px}
+.status-connecting{color:#d35400}
+.status-ok{color:#27ae60}
+.status-error{color:#c0392b}
 
 /* ── Tree canvas (Map Mode) ── */
 .tree-section {
   padding: 0;
   margin: 10px 16px 80px;
   overflow: hidden;
-  background: radial-gradient(ellipse at center, rgba(17,32,10,0.4) 0%, rgba(7,13,4,0.6) 100%);
-  border: 1px solid rgba(201,168,76,.15);
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(93, 64, 55, 0.3);
+  backdrop-filter: blur(2px);
   border-radius: 16px;
   height: calc(100vh - 240px);
   min-height: 450px;
@@ -91,50 +105,53 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .zoom-btn {
   width: 36px; height: 36px;
   border-radius: 8px;
-  background: rgba(20,36,10,.85);
-  border: 1px solid rgba(201,168,76,.3);
-  color: var(--gold);
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(93,64,55,.3);
+  color: #5D4037;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
-.zoom-btn:hover { background: var(--gold); color: #000; }
+.zoom-btn:hover { background: #5D4037; color: #fff; }
 
-/* ── Node (Modern Glassmorphism) ── */
+/* ── Node (Classic Nature Theme) ── */
 .node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s, left 0.3s, top 0.3s; pointer-events: auto; direction: rtl;}
-.node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(201,168,76,.7));transition:none}
-.node-wrap.drag-target .node-card{box-shadow:0 0 0 3px var(--gold),0 0 20px rgba(201,168,76,.5)!important}
+.node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(0,0,0,.4));transition:none}
+.node-wrap.drag-target .node-card{box-shadow:0 0 0 3px #5D4037,0 0 20px rgba(93,64,55,.6)!important}
 
 .node-card {
-  border-radius: 16px;
+  border-radius: 12px;
   width: 120px; 
-  min-height: 130px;
+  min-height: 125px;
   display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-  padding: 12px 8px; text-align: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  padding: 10px 8px; text-align: center;
+  background: linear-gradient(145deg, #fffcf5, #f5ecd3);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  border: 3px solid #d4c4a1;
+  transition: transform 0.2s, box-shadow 0.2s;
   position: relative; touch-action: none; overflow: visible;
 }
 .node-card:active { transform: scale(0.92); }
 
-.node-card.boy { 
-  background: linear-gradient(145deg, rgba(58,123,213,0.15), rgba(41,128,185,0.3)); 
-  border: 1px solid rgba(111,163,232,0.4); 
-}
-.node-card.girl { 
-  background: linear-gradient(145deg, rgba(213,97,154,0.15), rgba(232,114,184,0.3)); 
-  border: 1px solid rgba(232,155,197,0.4); 
-}
+.node-card.boy { border-color: #66BB6A; } 
+.node-card.girl { border-color: #F06292; } 
 
-.node-photo{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow: 0 4px 10px rgba(0,0,0,0.3);margin-bottom:8px;flex-shrink:0}
-.node-photo-placeholder{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid rgba(255,255,255,.3);margin-bottom:8px;flex-shrink:0;background:rgba(255,255,255,.15)}
-.node-name{font-weight:700;font-size:.85rem;color:#f5e8c8;line-height:1.3;word-break:break-word;max-width:105px}
-.node-meta{font-size:.65rem;color:var(--gold-light);margin-top:4px;opacity:.9;line-height:1.3;word-break:break-word}
+.node-photo, .node-photo-placeholder {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  margin-bottom: 8px; flex-shrink: 0;
+  background: #e0e0e0;
+}
+.node-photo-placeholder { display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#fff;}
+.node-name { font-weight: 800; font-size: 0.85rem; color: #3e2723; line-height: 1.3; word-break:break-word; max-width:105px; }
+.node-meta { font-size: 0.65rem; color: #795548; margin-top: 4px; font-weight: 600; line-height:1.3; word-break:break-word; }
 
 /* Collapse Button */
 .collapse-btn {
@@ -142,43 +159,44 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: #1a3a0c;
-  border: 1.5px solid var(--gold);
-  color: var(--gold);
+  background: #fffcf5;
+  border: 2px solid #5D4037;
+  color: #5D4037;
   border-radius: 50%;
   width: 26px;
   height: 26px;
   font-size: 0.8rem;
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   z-index: 30;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   transition: all 0.2s;
 }
-.collapse-btn:hover { background: var(--gold); color: #000; transform: translateX(-50%) scale(1.15); }
+.collapse-btn:hover { background: #5D4037; color: #fffcf5; transform: translateX(-50%) scale(1.15); }
 
 /* Admin btns */
 .node-actions{position:absolute;top:-22px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
 .node-wrap:hover .node-actions,.node-wrap.show-acts .node-actions{display:flex}
-.act-btn{width:24px;height:24px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:transform .15s}
+.act-btn{width:24px;height:24px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .15s}
 .act-btn:hover{transform:scale(1.2)}
 .act-edit{background:#f39c12;color:#fff}
 .act-delete{background:#e74c3c;color:#fff}
 
 /* Drag ghost */
-.drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.85;display:none}
+.drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.9;display:none}
 
 /* Empty */
-.empty-state{text-align:center;padding:60px 20px;color:#5a7850; pointer-events:auto;}
-.empty-state .tree-icon{font-size:4rem;margin-bottom:12px;opacity:.4}
-.empty-state p{font-size:.95rem;line-height:1.9}
+.empty-state{text-align:center;padding:60px 20px;color:#3e2723; pointer-events:auto;}
+.empty-state .tree-icon{font-size:4rem;margin-bottom:12px;opacity:.6}
+.empty-state p{font-size:.95rem;line-height:1.9;font-weight:bold}
 
-/* ── Modal ── */
+/* ── Modal (kept dark for contrast/readability of inputs) ── */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s;padding:14px}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:22px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.8);transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto}
+.modal{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:22px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.8);transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto;color:#f5e8c8}
 .modal-overlay.open .modal{transform:translateY(0)}
 .modal h2{font-family:'Amiri',serif;color:var(--gold);font-size:1.35rem;margin-bottom:14px;text-align:center}
 .form-group{margin-bottom:12px}
@@ -222,8 +240,8 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 /* Gender */
 .gender-toggle{display:flex;gap:10px}
 .gender-btn{flex:1;padding:9px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.86rem;font-weight:700;transition:all .2s;background:rgba(255,255,255,.05);color:#999}
-.gender-btn.boy.active{border-color:var(--boy);background:rgba(58,123,213,.2);color:var(--boy-light)}
-.gender-btn.girl.active{border-color:var(--girl);background:rgba(213,97,154,.2);color:var(--girl-light)}
+.gender-btn.boy.active{border-color:#3a7bd5;background:rgba(58,123,213,.2);color:#6fa3e8}
+.gender-btn.girl.active{border-color:#d5619a;background:rgba(213,97,154,.2);color:#e89bc5}
 
 .modal-actions{display:flex;gap:10px;margin-top:16px}
 .modal-actions .btn{flex:1;justify-content:center}
@@ -231,7 +249,7 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 /* Profile */
 .profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
 .profile-overlay.open{opacity:1;pointer-events:all}
-.profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8); max-height:90vh; overflow-y:auto;}
+.profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8); max-height:90vh; overflow-y:auto; color:#f5e8c8}
 .profile-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 14px;display:block}
 .profile-placeholder{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 14px}
 
@@ -249,29 +267,12 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(20,36,10,.96);border:1px solid var(--gold);color:var(--gold);padding:10px 22px;border-radius:28px;font-size:.84rem;z-index:9999;transition:transform .35s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
-/* Loader */
-.loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:6px}
-@keyframes spin{to{transform:rotate(360deg)}}
-
 /* ── Mobile Optimization ── */
 @media(max-width:480px){
-  .tree-section {
-    margin: 5px 8px 60px;
-    height: calc(100vh - 200px);
-  }
-  .node-card{
-    width:92px;
-    min-height:110px;
-    padding: 8px 4px;
-    border-radius: 12px;
-  }
-  .node-photo,.node-photo-placeholder{
-    width:48px;
-    height:48px;
-    margin-bottom: 6px;
-    font-size: 1.2rem;
-  }
-  .node-name { font-size: 0.75rem; max-width: 84px; }
+  .tree-section { margin: 5px 8px 60px; height: calc(100vh - 200px); }
+  .node-card { width:100px; min-height:115px; padding: 8px 4px; border-radius: 12px; }
+  .node-photo, .node-photo-placeholder { width:48px; height:48px; margin-bottom: 6px; font-size: 1.2rem; }
+  .node-name { font-size: 0.75rem; max-width: 90px; }
   .collapse-btn { width: 22px; height: 22px; font-size: 0.7rem; top: -10px; }
 }
 </style>
@@ -288,15 +289,15 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 <div class="status-bar" id="statusBar"></div>
 
 <div class="admin-bar">
-  <button class="btn btn-blue"  onclick="exportTree()" id="exportBtn" style="display:none;">📸 تصوير الشجرة كاملة</button>
+  <button class="btn btn-blue"  onclick="exportTree()" id="exportBtn" style="display:none;">📸 تصوير الشجرة</button>
   <button class="btn btn-green" onclick="openAddModal()">＋ إضافة فرد وأبنائه</button>
   <button class="btn btn-gold"  onclick="toggleAdmin()" id="adminBtn">🔐 وضع الإدارة</button>
   <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none; background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 مسح الكل</button>
 </div>
 <div class="admin-badge" id="adminBadge">
-  <span>✅ وضع الإدارة — ✏️ تعديل أو اسحب ورقة لتغيير النسب</span>
+  <span>✅ وضع الإدارة — ✏️ تعديل أو اسحب بطاقة لتغيير النسب</span>
 </div>
-<div class="drag-info" id="dragInfo">✋ اسحب ورقة وأفلتها فوق أب آخر لتغيير النسب</div>
+<div class="drag-info" id="dragInfo">✋ اسحب بطاقة وأفلتها فوق أب آخر لتغيير النسب</div>
 
 <div class="tree-section" id="treeSection">
   <div class="zoom-tools">
@@ -478,7 +479,7 @@ let people=[], isAdmin=false, editingId=null, currentProfileId=null;
 let formGender='male', editGender='male';
 let nodePos={};
 let firstRender = true;
-let collapsedNodes = new Set(); // حالة طي العقد
+let collapsedNodes = new Set(); 
 
 function setStatus(msg,type){
   const bar=document.getElementById('statusBar');
@@ -488,8 +489,8 @@ function setStatus(msg,type){
   }
 }
 
-// تعديل الثوابت البرمجية لتقليل الهوامش المهدورة وجعلها متناسقة على الجوال
-const NW=100, NH=115, HG=24, VG=50, TP=40;
+// تعديل الثوابت لتناسب حجم البطاقات الكلاسيكية
+const NW=120, NH=135, HG=24, VG=60, TP=40;
 
 /* ══════════════════════════════════
    MAP ZOOM & PAN LOGIC
@@ -794,6 +795,7 @@ function buildTree(focusRootId = null){
   }
   let off=0;roots.forEach(r=>{place(r,off+sw[r]/2,TP);off+=sw[r]+HG;});
 
+  // قلب المحور العمودي لتصبح الشجرة من الأسفل إلى الأعلى (كما هو مطلوب للطبيعة)
   let maxDepthY = 0;
   Object.values(pos).forEach(({y}) => { if(y > maxDepthY) maxDepthY = y; });
   Object.values(pos).forEach(p => { 
@@ -836,11 +838,11 @@ function renderTree(focusRootId = null){
       const midY = py - VG/2; 
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
       
-      // استخدام خط منحني (Cubic Bezier Curve) ناعم واحترافي بدلاً من الزوايا الحادة لربط الفروع
+      // استخدام خط منحني (Cubic Bezier Curve) باللون البني ليحاكي أغصان الشجرة
       path.setAttribute('d',`M${px},${py} C${px},${midY} ${cx},${midY} ${cx},${cy}`);
       path.setAttribute('fill','none');
-      path.setAttribute('stroke','rgba(201,168,76,0.45)');
-      path.setAttribute('stroke-width','2');
+      path.setAttribute('stroke','#5D4037'); /* لون بني خشبي */
+      path.setAttribute('stroke-width','4.5'); /* خط سميك كالغصن */
       svg.appendChild(path);
     });
   });
@@ -871,7 +873,7 @@ function renderTree(focusRootId = null){
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
         <div class="node-name">${esc(getDisplayName(p))}</div>
-        ${isRoot ? `<div class="node-meta" style="color:var(--gold)">🌱 الأساس</div>` : ''}
+        ${isRoot ? `<div class="node-meta" style="color:#2E7D32">🌱 الأساس</div>` : ''}
       </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
@@ -902,7 +904,7 @@ async function exportTree(rootId = null) {
 
   try {
     const canvas = await html2canvas(canvasEl, {
-      backgroundColor: '#0b1507',
+      backgroundColor: '#E0F6FF', // لون سماء فاتح للتصدير
       scale: 2, 
       useCORS: true,
       logging: false
@@ -1211,8 +1213,8 @@ function onDragStart(e){
   const t=e.touches?e.touches[0]:e;
   const ghost=document.getElementById('dragGhost');
   
-  // مطابقة الـ Ghost للشكل العصري الجديد
-  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:120px;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.6)"><div class="node-name" style="color:#f5e8c8">${esc(p.name)}</div></div>`;
+  // مطابقة الـ Ghost لثيم الطبيعة الجديد
+  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:120px;min-height:125px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 8px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);background:linear-gradient(145deg, #fffcf5, #f5ecd3);border:3px solid #d4c4a1"><div class="node-name" style="color:#3e2723; font-weight:800; font-size:0.85rem">${esc(p.name)}</div></div>`;
   ghost.style.display='block';
   ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
   wrap.classList.add('dragging');
