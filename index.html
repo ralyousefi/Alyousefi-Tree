@@ -103,27 +103,38 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 }
 .zoom-btn:hover { background: var(--gold); color: #000; }
 
-/* ── Node ── */
+/* ── Node (Modern Glassmorphism) ── */
 .node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s, left 0.3s, top 0.3s; pointer-events: auto; direction: rtl;}
 .node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(201,168,76,.7));transition:none}
 .node-wrap.drag-target .node-card{box-shadow:0 0 0 3px var(--gold),0 0 20px rgba(201,168,76,.5)!important}
 
-.node-card{
-  border-radius:50% 50% 46% 46%/55% 55% 45% 45%;
-  width:110px;min-height:120px;
-  display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding:8px 6px 8px;text-align:center;
-  box-shadow:0 4px 16px rgba(0,0,0,.3);
-  transition:transform .18s,box-shadow .18s;position:relative;touch-action:none;overflow:visible;
+.node-card {
+  border-radius: 16px;
+  width: 120px; 
+  min-height: 130px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 12px 8px; text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.2s;
+  position: relative; touch-action: none; overflow: visible;
 }
-.node-card:active{transform:scale(.95)}
-.node-card.boy{background:linear-gradient(160deg,#c8e4ff,#8dbfef,#5a9de0);border:2px solid #9ac7f5}
-.node-card.girl{background:linear-gradient(160deg,#ffd6ec,#f5a8d0,#e872b8);border:2px solid #f5a8d0}
+.node-card:active { transform: scale(0.92); }
 
-.node-photo{width:58px;height:58px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.7);margin-bottom:4px;flex-shrink:0}
-.node-photo-placeholder{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid rgba(255,255,255,.5);margin-bottom:4px;flex-shrink:0;background:rgba(255,255,255,.25)}
-.node-name{font-weight:800;font-size:.78rem;color:#0d1a08;line-height:1.2;word-break:break-word;max-width:96px}
-.node-meta{font-size:.56rem;color:#2a3a20;margin-top:4px;opacity:.8;line-height:1.3;word-break:break-word}
+.node-card.boy { 
+  background: linear-gradient(145deg, rgba(58,123,213,0.15), rgba(41,128,185,0.3)); 
+  border: 1px solid rgba(111,163,232,0.4); 
+}
+.node-card.girl { 
+  background: linear-gradient(145deg, rgba(213,97,154,0.15), rgba(232,114,184,0.3)); 
+  border: 1px solid rgba(232,155,197,0.4); 
+}
+
+.node-photo{width:60px;height:60px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);box-shadow: 0 4px 10px rgba(0,0,0,0.3);margin-bottom:8px;flex-shrink:0}
+.node-photo-placeholder{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;border:2px solid rgba(255,255,255,.3);margin-bottom:8px;flex-shrink:0;background:rgba(255,255,255,.15)}
+.node-name{font-weight:700;font-size:.85rem;color:#f5e8c8;line-height:1.3;word-break:break-word;max-width:105px}
+.node-meta{font-size:.65rem;color:var(--gold-light);margin-top:4px;opacity:.9;line-height:1.3;word-break:break-word}
 
 /* Collapse Button */
 .collapse-btn {
@@ -242,7 +253,27 @@ header p{font-size:.85rem;color:#a09050;margin-top:4px}
 .loader{display:inline-block;width:18px;height:18px;border:2px solid rgba(201,168,76,.3);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-left:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-@media(max-width:480px){.node-card{width:96px;min-height:110px}.node-photo,.node-photo-placeholder{width:50px;height:50px}}
+/* ── Mobile Optimization ── */
+@media(max-width:480px){
+  .tree-section {
+    margin: 5px 8px 60px;
+    height: calc(100vh - 200px);
+  }
+  .node-card{
+    width:92px;
+    min-height:110px;
+    padding: 8px 4px;
+    border-radius: 12px;
+  }
+  .node-photo,.node-photo-placeholder{
+    width:48px;
+    height:48px;
+    margin-bottom: 6px;
+    font-size: 1.2rem;
+  }
+  .node-name { font-size: 0.75rem; max-width: 84px; }
+  .collapse-btn { width: 22px; height: 22px; font-size: 0.7rem; top: -10px; }
+}
 </style>
 </head>
 <body>
@@ -457,7 +488,8 @@ function setStatus(msg,type){
   }
 }
 
-const NW=116, NH=128, HG=18, VG=60, TP=28;
+// تعديل الثوابت البرمجية لتقليل الهوامش المهدورة وجعلها متناسقة على الجوال
+const NW=100, NH=115, HG=24, VG=50, TP=40;
 
 /* ══════════════════════════════════
    MAP ZOOM & PAN LOGIC
@@ -469,7 +501,6 @@ function initMapLogic() {
   const ts = document.getElementById('treeSection');
   
   ts.addEventListener('mousedown', e => {
-    // Prevent panning when clicking buttons or cards
     if(e.target.closest('.node-card') || e.target.closest('.zoom-tools') || e.target.closest('.collapse-btn')) return;
     isPanning = true;
     startPanX = e.clientX - mapPanX;
@@ -494,7 +525,6 @@ function initMapLogic() {
     if(e.target.closest('.node-card') || e.target.closest('.zoom-tools')) return;
     e.preventDefault();
     const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    // Allow zooming out much further for massive trees
     const newScale = Math.max(0.05, Math.min(mapScale + delta, 3)); 
     
     const rect = ts.getBoundingClientRect();
@@ -644,7 +674,7 @@ function toggleCollapse(id) {
   } else {
     collapsedNodes.add(id);
   }
-  renderTree(); // إعادة الرسم بالترتيب الجديد
+  renderTree(); 
 }
 
 /* ══════════════════════════════════
@@ -746,7 +776,6 @@ function buildTree(focusRootId = null){
 
   const sw={};
   function calcW(id){
-    // إذا كان الفرع مطوياً، نعتبر أن الأبناء غير موجودين في الحساب
     const c = collapsedNodes.has(id) ? [] : (ch[id]||[]);
     if(!c.length){sw[id]=NW;return NW;}
     const t=c.reduce((s,x)=>s+calcW(x),0)+HG*(c.length-1);
@@ -797,7 +826,6 @@ function renderTree(focusRootId = null){
 
   people.forEach(p=>{
     if(!pos[p.id]) return;
-    // لا ترسم خطوط إذا كان الفرع مطوياً
     if(collapsedNodes.has(p.id)) return;
 
     const c=ch[p.id]||[];if(!c.length)return;
@@ -807,9 +835,11 @@ function renderTree(focusRootId = null){
       const cx=pos[cid].x, cy=pos[cid].y + NH; 
       const midY = py - VG/2; 
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
-      path.setAttribute('d',`M${px},${py} L${px},${midY} L${cx},${midY} L${cx},${cy}`);
+      
+      // استخدام خط منحني (Cubic Bezier Curve) ناعم واحترافي بدلاً من الزوايا الحادة لربط الفروع
+      path.setAttribute('d',`M${px},${py} C${px},${midY} ${cx},${midY} ${cx},${cy}`);
       path.setAttribute('fill','none');
-      path.setAttribute('stroke','rgba(201,168,76,0.5)');
+      path.setAttribute('stroke','rgba(201,168,76,0.45)');
       path.setAttribute('stroke-width','2');
       svg.appendChild(path);
     });
@@ -828,7 +858,6 @@ function renderTree(focusRootId = null){
     
     const isRoot = !(p.fatherId || p.motherId);
     
-    // إظهار زر الطي/التوسعة إذا كان لديه أبناء
     const hasChildren = ch[p.id] && ch[p.id].length > 0;
     const isCollapsed = collapsedNodes.has(p.id);
     const collapseBtnHTML = hasChildren ? `<button class="collapse-btn" title="${isCollapsed ? 'إظهار الفروع' : 'إخفاء الفروع'}" onclick="event.stopPropagation(); toggleCollapse('${p.id}')">${isCollapsed ? '➕' : '➖'}</button>` : '';
@@ -866,7 +895,6 @@ async function exportTree(rootId = null) {
   const oldTransform = canvasEl.style.transform;
   const oldScale = mapScale, oldPanX = mapPanX, oldPanY = mapPanY;
 
-  // عند التصدير، نقوم بنشر جميع الفروع مؤقتاً إذا أردنا الشجرة كاملة (اختياري، تركته كما هو ليتم تصوير ما هو ظاهر)
   renderTree(rootId);
   canvasEl.style.transform = 'none';
 
@@ -1182,9 +1210,11 @@ function onDragStart(e){
   const p=people.find(x=>x.id===id);if(!p)return;
   const t=e.touches?e.touches[0]:e;
   const ghost=document.getElementById('dragGhost');
-  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:110px;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;border-radius:50% 50% 46% 46%/55% 55% 45% 45%;box-shadow:0 8px 30px rgba(0,0,0,.6)"><div class="node-name">${esc(p.name)}</div></div>`;
+  
+  // مطابقة الـ Ghost للشكل العصري الجديد
+  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:120px;min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px;border-radius:16px;box-shadow:0 8px 30px rgba(0,0,0,.6)"><div class="node-name" style="color:#f5e8c8">${esc(p.name)}</div></div>`;
   ghost.style.display='block';
-  ghost.style.left=(t.clientX-55)+'px';ghost.style.top=(t.clientY-60)+'px';
+  ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
   wrap.classList.add('dragging');
   dragState={id,wrap,startX:t.clientX,startY:t.clientY,moved:false};
   if(e.touches){
@@ -1201,7 +1231,7 @@ function onDragMove(e){
   const t=e.touches?e.touches[0]:e;
   if(Math.abs(t.clientX-dragState.startX)>5||Math.abs(t.clientY-dragState.startY)>5)dragState.moved=true;
   const ghost=document.getElementById('dragGhost');
-  ghost.style.left=(t.clientX-55)+'px';ghost.style.top=(t.clientY-60)+'px';
+  ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
   document.querySelectorAll('.drag-target').forEach(el=>el.classList.remove('drag-target'));
   const tgt=getDropTarget(t.clientX,t.clientY,dragState.id);
   if(tgt)tgt.classList.add('drag-target');
