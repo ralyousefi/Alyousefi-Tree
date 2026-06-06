@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>شجرة نسب آل يوسف</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<title>شجرة أبناء وأحفاد الشيخ ابو حمد </title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
@@ -21,65 +21,44 @@
 </script>
 
 <style>
-/* ── ثيم المخطوطة الكلاسيكية (Manuscript Theme) ── */
+/* ── ألوان وثيم الطبيعة ── */
 :root {
-  --gold: #b38b4d; 
-  --gold-light: #dfc89e; 
-  --ink: #3e2723; /* لون حبر المخطوطات */
-  --ink-light: #5d4037;
-  --bg-parchment: #fcf8ee; /* لون الورق القديم */
-  --branch: #8d6e63;
-  --boy-border: #4caf50;
-  --girl-border: #e91e63;
+  --gold: #c9a84c; 
+  --gold-light: #e8c97a; 
+  --brown-branch: #5D4037; 
+  --boy: #2E7D32; 
+  --girl: #C2185B; 
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 body{
   font-family:'Cairo',sans-serif;
-  background-color: var(--bg-parchment);
-  /* تأثير نسيج ورقي خفيف */
-  background-image: radial-gradient(rgba(201, 168, 76, 0.05) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 50%, #A8E6CF 80%, #558B2F 100%);
   min-height:100vh;
-  color: var(--ink);
+  color:#333;
   overflow-x:hidden;
   touch-action:pan-y;
 }
 .app-wrapper{position:relative;z-index:1;min-height:100vh}
 
-/* ── Header (آل يوسف) ── */
-header{text-align:center;padding:26px 16px 10px;}
-header h1{font-family:'Amiri',serif;font-size:clamp(2rem,6vw,3.5rem);color:var(--ink);text-shadow: 1px 1px 0px rgba(255,255,255,0.8);}
-header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-light);font-weight:700;margin-top:2px}
-.header-line{width:200px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:12px auto}
-
-/* الحديث الشريف */
-.hadith-box {
-  background: rgba(255, 255, 255, 0.6);
-  border: 1px dashed var(--gold);
-  border-radius: 8px;
-  padding: 12px;
-  max-width: 500px;
-  margin: 15px auto;
-  font-family: 'Amiri', serif;
-  font-size: 0.95rem;
-  color: var(--ink-light);
-  line-height: 1.6;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-}
+/* ── Header ── */
+header{text-align:center;padding:26px 16px 10px}
+header h1{font-family:'Amiri',serif;font-size:clamp(1.8rem,5vw,3rem);color:#2E7D32;text-shadow:0 2px 10px rgba(255,255,255,0.8)}
+header p{font-size:.85rem;color:#5D4037;font-weight:bold;margin-top:4px}
+.header-line{width:160px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#5D4037,transparent);margin:10px auto 0}
 
 /* ── Buttons ── */
-.admin-bar{display:flex;justify-content:center;gap:9px;padding:10px 14px;flex-wrap:wrap}
-.btn{font-family:'Cairo',sans-serif;font-size:.84rem;font-weight:700;padding:9px 18px;border:none;border-radius:6px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px; border: 1px solid transparent;}
-.btn-green{background:#fdfcf8;color:var(--ink);border-color:var(--gold); box-shadow:0 2px 5px rgba(0,0,0,0.05)}
-.btn-green:hover{background:var(--gold);color:#fff}
-.btn-gold{background:var(--ink);color:#fff;}
-.btn-gold:hover{background:var(--ink-light);}
-.btn-blue{background:transparent;color:var(--ink-light);border-color:var(--ink-light);font-size:.78rem;padding:7px 13px}
-.btn-cancel{background:#eee;color:#555;border:1px solid #ccc}
+.admin-bar{display:flex;justify-content:center;gap:9px;padding:10px 14px 6px;flex-wrap:wrap}
+.btn{font-family:'Cairo',sans-serif;font-size:.84rem;font-weight:700;padding:9px 18px;border:none;border-radius:30px;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
+.btn-green{background:linear-gradient(135deg,#3a8c2a,#266018);color:#fff}
+.btn-green:hover,.btn-green:active{transform:translateY(-1px);box-shadow:0 6px 20px rgba(58,140,42,.4)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a07830);color:#1a0e00}
+.btn-gold:hover,.btn-gold:active{transform:translateY(-1px);box-shadow:0 6px 20px rgba(201,168,76,.4)}
+.btn-blue{background:linear-gradient(135deg,#2980b9,#1a5c82);color:#fff;font-size:.78rem;padding:7px 13px}
+.btn-cancel{background:rgba(255,255,255,.07);color:#bbb;border:1px solid rgba(255,255,255,.14)}
 
 .admin-badge{text-align:center;display:none;margin-bottom:3px}
-.admin-badge span{display:inline-block;background:rgba(179,139,77,.1);border:1px solid var(--gold);border-radius:6px;padding:4px 14px;font-size:.8rem;color:var(--ink);font-weight:bold;}
-.drag-info{text-align:center;font-size:.75rem;color:var(--ink-light);padding:3px;display:none}
+.admin-badge span{display:inline-block;background:rgba(201,168,76,.13);border:1px solid rgba(201,168,76,.3);border-radius:20px;padding:4px 14px;font-size:.76rem;color:var(--gold)}
+.drag-info{text-align:center;font-size:.72rem;color:rgba(93,64,55,.8);font-weight:bold;padding:3px;display:none}
 .drag-info.show{display:block}
 
 /* ── Status bar ── */
@@ -88,15 +67,16 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
 .status-ok{color:#27ae60}
 .status-error{color:#c0392b}
 
-/* ── Tree canvas ── */
+/* ── Tree canvas (Map Mode) ── */
 .tree-section {
   padding: 0;
   margin: 10px 16px 80px;
   overflow: hidden;
-  background: transparent;
-  border: 1px solid var(--gold-light);
-  border-radius: 12px;
-  height: calc(100vh - 300px);
+  background: rgba(255, 255, 255, 0.25);
+  border: 2px solid rgba(93, 64, 55, 0.3);
+  backdrop-filter: blur(2px);
+  border-radius: 16px;
+  height: calc(100vh - 240px);
   min-height: 450px;
   position: relative;
   touch-action: none;
@@ -124,66 +104,67 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
 }
 .zoom-btn {
   width: 36px; height: 36px;
-  border-radius: 6px;
-  background: rgba(255,255,255,.9);
-  border: 1px solid var(--gold);
-  color: var(--ink);
+  border-radius: 8px;
+  background: rgba(255,255,255,.85);
+  border: 1px solid rgba(93,64,55,.3);
+  color: #5D4037;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
+  backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
 }
-.zoom-btn:hover { background: var(--gold); color: #fff; }
+.zoom-btn:hover { background: #5D4037; color: #fff; }
 
-/* ── Node (Paper Card Style) ── */
+/* ── Node (Classic Nature Theme) ── */
 .node-wrap{display:inline-flex;flex-direction:column;align-items:center;position:absolute;transform:translateX(-50%);cursor:pointer;user-select:none;-webkit-user-select:none;transition:filter .15s, left 0.3s, top 0.3s; pointer-events: auto; direction: rtl;}
-.node-wrap.dragging{z-index:1000;filter:drop-shadow(0 10px 15px rgba(0,0,0,.2));transition:none}
-.node-wrap.drag-target .node-card{box-shadow:0 0 0 3px var(--gold),0 0 15px rgba(179,139,77,.4)!important}
+.node-wrap.dragging{z-index:1000;filter:drop-shadow(0 8px 24px rgba(0,0,0,.4));transition:none}
+.node-wrap.drag-target .node-card{box-shadow:0 0 0 3px #5D4037,0 0 20px rgba(93,64,55,.6)!important}
 
 .node-card {
-  border-radius: 8px; /* بطاقات تشبه الأوراق */
-  width: 130px; 
-  min-height: 50px; /* شكل أفقي أكثر ومبسط */
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 10px; text-align: center;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.06);
-  border: 1px solid var(--gold-light);
+  border-radius: 12px;
+  width: 120px; 
+  min-height: 125px;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding: 10px 8px; text-align: center;
+  background: linear-gradient(145deg, #fffcf5, #f5ecd3);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+  border: 3px solid #d4c4a1;
   transition: transform 0.2s, box-shadow 0.2s;
   position: relative; touch-action: none; overflow: visible;
 }
-.node-card:active { transform: scale(0.95); }
+.node-card:active { transform: scale(0.92); }
 
-/* لمسة لونية خفيفة للتمييز دون إفساد طابع المخطوطة */
-.node-card.boy { border-top: 3px solid var(--boy-border); } 
-.node-card.girl { border-top: 3px solid var(--girl-border); } 
+.node-card.boy { border-color: #66BB6A; } 
+.node-card.girl { border-color: #F06292; } 
 
 .node-photo, .node-photo-placeholder {
-  width: 48px; height: 48px;
+  width: 60px; height: 60px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid var(--gold-light);
-  margin-bottom: 6px; flex-shrink: 0;
-  background: #f5f5f5;
+  border: 3px solid #fff;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  margin-bottom: 8px; flex-shrink: 0;
+  background: #e0e0e0;
 }
-.node-photo-placeholder { display:flex; align-items:center; justify-content:center; font-size:1.2rem; color:#aaa;}
-.node-name { font-family: 'Amiri', serif; font-weight: 700; font-size: 1rem; color: var(--ink); line-height: 1.2; word-break:break-word; max-width:115px; }
-.node-meta { font-family: 'Cairo', sans-serif; font-size: 0.65rem; color: var(--ink-light); margin-top: 4px; line-height:1.3; word-break:break-word; }
+.node-photo-placeholder { display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:#fff;}
+.node-name { font-weight: 800; font-size: 0.85rem; color: #3e2723; line-height: 1.3; word-break:break-word; max-width:105px; }
+.node-meta { font-size: 0.65rem; color: #795548; margin-top: 4px; font-weight: 600; line-height:1.3; word-break:break-word; }
 
 /* Collapse Button */
 .collapse-btn {
   position: absolute;
-  bottom: -12px; /* وضع الزر بالأسفل لأن الشجرة تتفرع للأسفل */
+  top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  background: #fff;
-  border: 1px solid var(--gold);
-  color: var(--ink);
+  background: #fffcf5;
+  border: 2px solid #5D4037;
+  color: #5D4037;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   font-size: 0.8rem;
   font-weight: bold;
   display: flex;
@@ -191,16 +172,16 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
   justify-content: center;
   cursor: pointer;
   z-index: 30;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   transition: all 0.2s;
 }
-.collapse-btn:hover { background: var(--gold); color: #fff; transform: translateX(-50%) scale(1.1); }
+.collapse-btn:hover { background: #5D4037; color: #fffcf5; transform: translateX(-50%) scale(1.15); }
 
 /* Admin btns */
-.node-actions{position:absolute;top:-30px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
+.node-actions{position:absolute;top:-22px;left:50%;transform:translateX(-50%);display:none;gap:4px;z-index:20;white-space:nowrap}
 .node-wrap:hover .node-actions,.node-wrap.show-acts .node-actions{display:flex}
-.act-btn{width:26px;height:26px;border-radius:4px;border:none;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.2);transition:transform .15s}
-.act-btn:hover{transform:scale(1.1)}
+.act-btn{width:24px;height:24px;border-radius:50%;border:none;font-size:.6rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.3);transition:transform .15s}
+.act-btn:hover{transform:scale(1.2)}
 .act-edit{background:#f39c12;color:#fff}
 .act-delete{background:#e74c3c;color:#fff}
 
@@ -208,92 +189,91 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
 .drag-ghost{position:fixed;pointer-events:none;z-index:9999;opacity:.9;display:none}
 
 /* Empty */
-.empty-state{text-align:center;padding:60px 20px;color:var(--ink-light); pointer-events:auto;}
-.empty-state .tree-icon{font-size:3rem;margin-bottom:12px;opacity:.6}
-.empty-state p{font-family:'Amiri', serif; font-size:1.1rem;line-height:1.9;}
+.empty-state{text-align:center;padding:60px 20px;color:#3e2723; pointer-events:auto;}
+.empty-state .tree-icon{font-size:4rem;margin-bottom:12px;opacity:.6}
+.empty-state p{font-size:.95rem;line-height:1.9;font-weight:bold}
 
-/* ── Modal (استايل نظيف متوافق مع المخطوطة) ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(62,39,35,.7);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s;padding:14px}
+/* ── Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;pointer-events:none;transition:opacity .3s;padding:14px}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:#fffcf5;border:2px solid var(--gold);border-radius:12px;padding:22px;width:100%;max-width:480px;box-shadow:0 10px 40px rgba(0,0,0,.3);transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto;color:var(--ink)}
+.modal{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.28);border-radius:18px;padding:22px;width:100%;max-width:480px;box-shadow:0 20px 60px rgba(0,0,0,.8);transform:translateY(20px);transition:transform .3s;max-height:90vh;overflow-y:auto;color:#f5e8c8}
 .modal-overlay.open .modal{transform:translateY(0)}
-.modal h2{font-family:'Amiri',serif;color:var(--ink);font-size:1.35rem;margin-bottom:14px;text-align:center; border-bottom: 1px dashed var(--gold-light); padding-bottom: 8px;}
+.modal h2{font-family:'Amiri',serif;color:var(--gold);font-size:1.35rem;margin-bottom:14px;text-align:center}
 .form-group{margin-bottom:12px}
-.form-group label{display:block;font-size:.85rem;color:var(--ink-light);margin-bottom:4px;font-weight:700}
-.form-group input[type=text], .form-group input[type=number], .form-group select {width:100%;background:#fff;border:1px solid #ccc;border-radius:6px;padding:9px 12px;color:var(--ink);font-family:'Cairo',sans-serif;font-size:.88rem}
-.form-group input:focus, .form-group select:focus {outline:none;border-color:var(--gold)}
+.form-group label{display:block;font-size:.8rem;color:var(--gold-light);margin-bottom:4px;font-weight:700}
+.form-group input[type=text], .form-group input[type=number] {width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:9px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.88rem}
+.form-group input:focus{outline:none;border-color:var(--gold)}
 
 /* Dynamic Children Fields */
-.child-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; background:#f9f9f9; padding:8px; border-radius:6px; border:1px solid #e0e0e0; }
-.child-row input, .child-row select { background: #fff; border: 1px solid #ccc; border-radius: 4px; padding: 7px; color: var(--ink); font-family: 'Cairo', sans-serif; font-size: .8rem; }
+.child-row { display: flex; gap: 6px; margin-bottom: 8px; align-items: center; flex-wrap: wrap; background:rgba(255,255,255,.03); padding:8px; border-radius:10px; border:1px solid rgba(201,168,76,.15); }
+.child-row input, .child-row select { background: rgba(255,255,255,.06); border: 1px solid rgba(201,168,76,.22); border-radius: 8px; padding: 7px; color: #f5e8c8; font-family: 'Cairo', sans-serif; font-size: .8rem; }
 .child-row .child-name { flex: 2; min-width: 100px; }
 .child-row .child-family { flex: 1.5; min-width: 90px; }
 .child-row .child-gender { flex: 1; min-width: 70px; }
-.child-del { background: #e74c3c; color: #fff; border: none; border-radius: 4px; width: 32px; height: 34px; cursor: pointer; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
+.child-del { background: #e74c3c; color: #fff; border: none; border-radius: 8px; width: 32px; height: 34px; cursor: pointer; flex-shrink: 0; display:flex; align-items:center; justify-content:center; }
 .btn-small { padding: 6px 14px; font-size: .75rem; margin-top: 4px; }
 
 /* Photo */
-.photo-upload-area{display:flex;align-items:center;gap:12px;background:#fcf8ee;border:1px dashed var(--gold);border-radius:8px;padding:10px 12px;cursor:pointer;transition:border-color .2s}
-.photo-upload-area:hover{background:#fdfdfd}
-.photo-preview-circle{width:52px;height:52px;border-radius:50%;background:#fff;border:1px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden}
+.photo-upload-area{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.04);border:1px dashed rgba(201,168,76,.3);border-radius:12px;padding:10px 12px;cursor:pointer;transition:border-color .2s}
+.photo-upload-area:hover{border-color:var(--gold)}
+.photo-preview-circle{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;overflow:hidden}
 .photo-preview-circle img{width:100%;height:100%;object-fit:cover;border-radius:50%}
-.photo-upload-text{font-size:.78rem;color:#666;line-height:1.5}
-.photo-upload-text strong{color:var(--ink);display:block;font-size:.82rem}
+.photo-upload-text{font-size:.78rem;color:#a09060;line-height:1.5}
+.photo-upload-text strong{color:var(--gold-light);display:block;font-size:.82rem}
 .photo-remove-btn{margin-top:5px;font-size:.7rem;color:#e74c3c;cursor:pointer;background:none;border:none;font-family:'Cairo',sans-serif;padding:0}
 
 /* Searchable select */
 .searchable-select{position:relative}
-.selected-display{width:100%;background:#fff;border:1px solid #ccc;border-radius:6px;padding:9px 32px 9px 12px;color:var(--ink);font-family:'Cairo',sans-serif;font-size:.88rem;cursor:pointer;user-select:none;min-height:40px;display:flex;align-items:center}
+.selected-display{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(201,168,76,.22);border-radius:10px;padding:9px 32px 9px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.88rem;cursor:pointer;user-select:none;min-height:40px;display:flex;align-items:center}
 .selected-display::after{content:'▾';position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--gold);pointer-events:none}
-.searchable-select.open .selected-display{border-color:var(--gold);border-radius:6px 6px 0 0}
-.ss-dropdown{display:none;position:absolute;top:100%;right:0;left:0;background:#fff;border:1px solid var(--gold);border-top:none;border-radius:0 0 6px 6px;max-height:180px;overflow-y:auto;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+.searchable-select.open .selected-display{border-color:var(--gold);border-radius:10px 10px 0 0}
+.ss-dropdown{display:none;position:absolute;top:100%;right:0;left:0;background:#182d0c;border:1px solid rgba(201,168,76,.25);border-top:none;border-radius:0 0 10px 10px;max-height:180px;overflow-y:auto;z-index:300;box-shadow:0 8px 24px rgba(0,0,0,.6)}
 .searchable-select.open .ss-dropdown{display:block}
-.ss-search{width:100%;background:#f9f9f9;border:none;border-bottom:1px solid #eee;padding:8px 12px;color:var(--ink);font-family:'Cairo',sans-serif;font-size:.82rem;position:sticky;top:0;z-index:1}
+.ss-search{width:100%;background:rgba(255,255,255,.07);border:none;border-bottom:1px solid rgba(201,168,76,.18);padding:7px 12px;color:#f5e8c8;font-family:'Cairo',sans-serif;font-size:.82rem;position:sticky;top:0;z-index:1}
 .ss-search:focus{outline:none}
-.ss-item{padding:8px 12px;cursor:pointer;font-size:.84rem;color:var(--ink-light);transition:background .15s;line-height:1.35; border-bottom:1px solid #f0f0f0;}
-.ss-item:hover{background:#fcf8ee;color:var(--ink)}
-.ss-item.active{background:var(--gold-light);color:var(--ink)}
-.ss-item .ss-sub{font-size:.68rem;color:#888;display:block;margin-top:1px}
+.ss-search::placeholder{color:#7a6840}
+.ss-item{padding:8px 12px;cursor:pointer;font-size:.84rem;color:#e0cfa0;transition:background .15s;line-height:1.35}
+.ss-item:hover{background:rgba(201,168,76,.14);color:#fff}
+.ss-item.active{background:rgba(201,168,76,.2);color:var(--gold)}
+.ss-item .ss-sub{font-size:.68rem;color:#8a7a50;display:block;margin-top:1px}
 
 /* Gender */
 .gender-toggle{display:flex;gap:10px}
-.gender-btn{flex:1;padding:9px;border-radius:6px;border:1px solid #ccc;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.86rem;font-weight:700;transition:all .2s;background:#fff;color:#777}
-.gender-btn.boy.active{border-color:var(--boy-border);background:rgba(76,175,80,.1);color:var(--boy-border)}
-.gender-btn.girl.active{border-color:var(--girl-border);background:rgba(233,30,99,.1);color:var(--girl-border)}
+.gender-btn{flex:1;padding:9px;border-radius:10px;border:2px solid transparent;cursor:pointer;font-family:'Cairo',sans-serif;font-size:.86rem;font-weight:700;transition:all .2s;background:rgba(255,255,255,.05);color:#999}
+.gender-btn.boy.active{border-color:#3a7bd5;background:rgba(58,123,213,.2);color:#6fa3e8}
+.gender-btn.girl.active{border-color:#d5619a;background:rgba(213,97,154,.2);color:#e89bc5}
 
 .modal-actions{display:flex;gap:10px;margin-top:16px}
 .modal-actions .btn{flex:1;justify-content:center}
 
 /* Profile */
-.profile-overlay{position:fixed;inset:0;background:rgba(62,39,35,.8);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
+.profile-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:2000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
 .profile-overlay.open{opacity:1;pointer-events:all}
-.profile-card{background:#fffcf5;border:2px solid var(--gold);border-radius:12px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.3); max-height:90vh; overflow-y:auto; color:var(--ink)}
-.profile-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:2px solid var(--gold);margin:0 auto 14px;display:block}
-.profile-placeholder{width:100px;height:100px;border-radius:50%;background:#f5f5f5;border:2px solid var(--gold-light);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 14px;color:#aaa}
+.profile-card{background:linear-gradient(160deg,#1e2e10,#0f1a08);border:1px solid rgba(201,168,76,.35);border-radius:20px;padding:28px 24px;text-align:center;max-width:300px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.8); max-height:90vh; overflow-y:auto; color:#f5e8c8}
+.profile-img{width:100px;height:100px;border-radius:50%;object-fit:cover;border:3px solid var(--gold);margin:0 auto 14px;display:block}
+.profile-placeholder{width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,.1);border:3px solid rgba(201,168,76,.4);display:flex;align-items:center;justify-content:center;font-size:2.5rem;margin:0 auto 14px}
 
 /* ── Lightbox ── */
 .profile-img{cursor:zoom-in}
 .lightbox-overlay{position:fixed;inset:0;background:rgba(0,0,0,.95);display:flex;align-items:center;justify-content:center;z-index:9000;opacity:0;pointer-events:none;transition:opacity .3s;padding:20px}
 .lightbox-overlay.open{opacity:1;pointer-events:all}
-.lightbox-overlay img{max-width:90vw;max-height:88vh;border-radius:8px;box-shadow:0 0 60px rgba(0,0,0,.8);object-fit:contain;transition:transform .2s;border:2px solid var(--gold-light)}
-.lightbox-close{position:fixed;top:18px;left:18px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.2);border:1px solid #fff;color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;}
-.lightbox-close:hover{background:rgba(255,255,255,.4)}
-.profile-name{font-family:'Amiri',serif;font-size:1.6rem;color:var(--ink);margin-bottom:4px; font-weight:bold;}
-.profile-meta{font-size:.85rem;color:var(--ink-light);margin-bottom:4px;line-height:1.5}
+.lightbox-overlay img{max-width:90vw;max-height:88vh;border-radius:16px;box-shadow:0 0 60px rgba(0,0,0,.8);object-fit:contain;transition:transform .2s;border:2px solid rgba(201,168,76,.3)}
+.lightbox-close{position:fixed;top:18px;left:18px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:1.2rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;backdrop-filter:blur(6px)}
+.lightbox-close:hover{background:rgba(255,255,255,.22)}
+.profile-name{font-family:'Amiri',serif;font-size:1.5rem;color:var(--gold);margin-bottom:4px}
+.profile-meta{font-size:.82rem;color:#a09060;margin-bottom:4px;line-height:1.4}
 
 /* Toast */
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--ink);border:1px solid var(--gold);color:#fff;padding:10px 22px;border-radius:6px;font-size:.84rem;z-index:9999;transition:transform .35s;white-space:nowrap;pointer-events:none;box-shadow:0 4px 10px rgba(0,0,0,0.2)}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(70px);background:rgba(20,36,10,.96);border:1px solid var(--gold);color:var(--gold);padding:10px 22px;border-radius:28px;font-size:.84rem;z-index:9999;transition:transform .35s;white-space:nowrap;pointer-events:none}
 .toast.show{transform:translateX(-50%) translateY(0)}
 
 /* ── Mobile Optimization ── */
 @media(max-width:480px){
-  header h1 { font-size: 2.2rem; }
-  .tree-section { margin: 5px 8px 60px; height: calc(100vh - 280px); }
-  .node-card { width:110px; min-height:48px; padding: 8px 6px; }
-  .node-photo, .node-photo-placeholder { width:40px; height:40px; margin-bottom: 6px; font-size: 1rem; }
-  .node-name { font-size: 0.9rem; max-width: 95px; }
-  .collapse-btn { width: 22px; height: 22px; font-size: 0.7rem; bottom: -11px; }
-  .hadith-box { font-size: 0.85rem; padding: 10px; margin: 10px 10px;}
+  .tree-section { margin: 5px 8px 60px; height: calc(100vh - 200px); }
+  .node-card { width:100px; min-height:115px; padding: 8px 4px; border-radius: 12px; }
+  .node-photo, .node-photo-placeholder { width:48px; height:48px; margin-bottom: 6px; font-size: 1.2rem; }
+  .node-name { font-size: 0.75rem; max-width: 90px; }
+  .collapse-btn { width: 22px; height: 22px; font-size: 0.7rem; top: -10px; }
 }
 </style>
 </head>
@@ -301,23 +281,21 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
 <div class="app-wrapper">
 
 <header>
-  <h1>شجرة نسب آل يوسف</h1>
-  <p class="subtitle">الوهبة التميميين أهل أشيقر ومن تفرع منهم</p>
-  <div class="hadith-box">
-    "قال رسول الله صلى الله عليه وسلم: تعلموا من أنسابكم ما تصلوا به أرحامكم، فإن صلة الرحم محبة في الأهل، مثراة في المال، منسأة في الأجل، مرضاة للرب."
-  </div>
+  <h1>🌳 شجرة أبناء وأحفاد الشيخ ابو حمد </h1>
+  <p>بمشاركتكم تتزين الشجرة</p>
+  <div class="header-line"></div>
 </header>
 
 <div class="status-bar" id="statusBar"></div>
 
 <div class="admin-bar">
-  <button class="btn btn-blue"  onclick="exportTree()" id="exportBtn" style="display:none;">📸 حفظ المخطوطة</button>
+  <button class="btn btn-blue"  onclick="exportTree()" id="exportBtn" style="display:none;">📸 تصوير الشجرة</button>
   <button class="btn btn-green" onclick="openAddModal()">＋ إضافة فرد وأبنائه</button>
   <button class="btn btn-gold"  onclick="toggleAdmin()" id="adminBtn">🔐 وضع الإدارة</button>
-  <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none; color:#e74c3c; border-color:#e74c3c">🗑 مسح الكل</button>
+  <button class="btn btn-blue"  onclick="clearConfirm()" id="clearBtn" style="display:none; background:linear-gradient(135deg,#e74c3c,#c0392b);">🗑 مسح الكل</button>
 </div>
 <div class="admin-badge" id="adminBadge">
-  <span>✅ وضع الإدارة مفتوح — يمكنك التعديل والترتيب</span>
+  <span>✅ وضع الإدارة — ✏️ تعديل أو اسحب بطاقة لتغيير النسب</span>
 </div>
 <div class="drag-info" id="dragInfo">✋ اسحب بطاقة وأفلتها فوق أب آخر لتغيير النسب</div>
 
@@ -345,7 +323,7 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
     </div>
     <div class="form-group">
       <label>اسم العائلة (اختياري)</label>
-      <input type="text" id="inputFamilyName" placeholder="سيتم إضافة 'اليوسف' تلقائياً">
+      <input type="text" id="inputFamilyName" placeholder="سيتم إضافة 'اليوسفي' تلقائياً لنسل الأبناء">
     </div>
     <div class="form-group">
       <label>الجنس *</label>
@@ -358,7 +336,7 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
       <label>الصورة (اختياري)</label>
       <div class="photo-upload-area" onclick="document.getElementById('photoInput').click()">
         <div class="photo-preview-circle" id="addPhotoPreview">📷</div>
-        <div class="photo-upload-text"><strong>اضغط لرفع صورة</strong>الصور الشخصية اختيارية</div>
+        <div class="photo-upload-text"><strong>اضغط لرفع صورة</strong>تُضغط تلقائياً</div>
       </div>
       <input type="file" id="photoInput" accept="image/*" style="display:none" onchange="handlePhoto(this,'addPhotoPreview','addPhotoData')">
       <input type="hidden" id="addPhotoData">
@@ -376,7 +354,7 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
       <input type="hidden" id="fatherValue">
     </div>
     <div class="form-group">
-      <label>الأم <span style="color:#a09050;font-weight:400; font-size:0.75rem">(يكفي اختيار الأب فقط عادةً)</span></label>
+      <label>الأم <span style="color:#e74c3c">*</span> <span style="font-size:.72rem;color:#a09050;font-weight:400">(يكفي اختيار أحدهما)</span></label>
       <div class="searchable-select" id="motherSelect">
         <div class="selected-display" id="motherDisplay" onclick="toggleSS('motherSelect')">— اختر الأم —</div>
         <div class="ss-dropdown">
@@ -387,15 +365,15 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
       <input type="hidden" id="motherValue">
     </div>
 
-    <hr style="border:1px dashed #ccc;margin:18px 0;">
+    <hr style="border:1px solid rgba(201,168,76,.15);margin:18px 0;">
     <div class="form-group">
-      <label style="color:var(--ink); font-size:.9rem">👥 إضافة أبناء مباشرين دفعة واحدة (اختياري)</label>
+      <label style="color:var(--gold-light); font-size:.85rem">👥 إضافة أبناء/بنات لهذا الفرد (اختياري)</label>
       <div id="childrenList"></div>
-      <button type="button" class="btn btn-cancel btn-small" onclick="addChildField()">+ إضافة ابن/ابنة</button>
+      <button type="button" class="btn btn-blue btn-small" onclick="addChildField()">+ إضافة ابن/ابنة</button>
     </div>
 
     <div class="modal-actions">
-      <button class="btn btn-gold"  id="saveBtn" onclick="savePerson()">💾 حفظ في الشجرة</button>
+      <button class="btn btn-green"  id="saveBtn" onclick="savePerson()">💾 حفظ</button>
       <button class="btn btn-cancel" onclick="closeModal()">إلغاء</button>
     </div>
   </div>
@@ -403,14 +381,14 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
 
 <div class="modal-overlay" id="editOverlay">
   <div class="modal">
-    <h2>✏️ تعديل بيانات الفرد</h2>
+    <h2>✏️ تعديل الفرد</h2>
     <div class="form-group">
       <label>الاسم الأول *</label>
       <input type="text" id="editName">
     </div>
     <div class="form-group">
       <label>اسم العائلة</label>
-      <input type="text" id="editFamilyName" placeholder="سيتم إضافة 'اليوسف' تلقائياً">
+      <input type="text" id="editFamilyName" placeholder="سيتم إضافة 'اليوسفي' تلقائياً لنسل الأبناء">
     </div>
     <div class="form-group">
       <label>الجنس *</label>
@@ -461,8 +439,8 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
 <div class="modal-overlay" id="orderChildrenOverlay">
   <div class="modal" style="max-width:380px;">
     <h2>🔢 ترتيب الأبناء</h2>
-    <p style="font-size:0.8rem; color:#888; margin-bottom:14px; text-align:center;">
-      (رقم 1 هو الأكبر ويكون في اليمين، وكلما زاد الرقم يتجه لليسار)
+    <p style="font-size:0.8rem; color:#a09060; margin-bottom:14px; text-align:center;">
+      أدخل رقم الترتيب لكل ابن (1 هو الأصغر ويكون في اليمين، وكلما زاد الرقم يتجه لليسار)
     </p>
     <div id="orderChildrenList" style="max-height:50vh; overflow-y:auto; margin-bottom:16px;"></div>
     <div class="modal-actions">
@@ -476,10 +454,10 @@ header p.subtitle{font-family:'Amiri',serif;font-size:1.1rem;color:var(--ink-lig
   <div class="profile-card" onclick="event.stopPropagation()">
     <div id="profileImgWrap"></div>
     <div class="profile-name"  id="profileName"></div>
-    <div class="profile-meta"  id="profileMeta" style="font-weight:700; color:var(--ink)"></div>
-    <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:#888"></div>
+    <div class="profile-meta"  id="profileMeta" style="font-weight:700; color:#e8c97a"></div>
+    <div class="profile-meta"  id="profileMeta2" style="margin-top:10px; color:#a09060"></div>
     
-    <button class="btn btn-blue" id="orderChildrenBtn" style="margin-top:18px;width:100%;justify-content:center;display:none; border:1px solid #ccc; color:#555" onclick="openOrderChildren()">🔢 ترتيب الأبناء</button>
+    <button class="btn btn-blue" id="orderChildrenBtn" style="margin-top:18px;width:100%;justify-content:center;display:none; background:linear-gradient(135deg,#3498db,#2980b9);" onclick="openOrderChildren()">🔢 ترتيب الأبناء</button>
     
     <button class="btn btn-gold" id="exportSubBtn" style="margin-top:8px;width:100%;justify-content:center;display:none;" onclick="exportTree(currentProfileId)">📸 حفظ صورة لنسل هذا الفرد</button>
     <button class="btn btn-cancel" style="margin-top:8px;width:100%;justify-content:center" onclick="closeProfile()">✕ إغلاق</button>
@@ -501,7 +479,7 @@ let people=[], isAdmin=false, editingId=null, currentProfileId=null;
 let formGender='male', editGender='male';
 let nodePos={};
 let firstRender = true;
-let isFirstDataLoad = true; // لطي الشجرة في البداية
+let isFirstDataLoad = true; // متغير لمعرفة إذا كان التحميل هو الأول
 let collapsedNodes = new Set(); 
 
 function setStatus(msg,type){
@@ -512,8 +490,8 @@ function setStatus(msg,type){
   }
 }
 
-// ثوابت الأبعاد للبطاقات الأفقية والتسلسل من الأعلى للأسفل
-const NW=140, NH=80, HG=20, VG=60, TP=40;
+// تعديل الثوابت لتناسب حجم البطاقات الكلاسيكية
+const NW=120, NH=135, HG=24, VG=60, TP=40;
 
 /* ══════════════════════════════════
    MAP ZOOM & PAN LOGIC
@@ -642,7 +620,7 @@ function mapZoomFit(forcedCanvasW=null, forcedCanvasH=null) {
   const sY = ts.clientHeight / (ch + 60);
   mapScale = Math.min(sX, sY, 1.1); 
   mapPanX = (ts.clientWidth - cw * mapScale) / 2;
-  mapPanY = Math.max(20, (ts.clientHeight - ch * mapScale) / 2); // توسيط
+  mapPanY = Math.max(20, (ts.clientHeight - ch * mapScale) / 2); 
   updateMapTransform();
 }
 
@@ -660,7 +638,7 @@ function isYousefiLine(personId) {
 
 function getDisplayName(p) {
   if(p.familyName) return p.name + ' ' + p.familyName; 
-  if(isYousefiLine(p.id)) return p.name + ' اليوسف'; 
+  if(isYousefiLine(p.id)) return p.name + ' اليوسفي'; 
   return p.name; 
 }
 
@@ -668,7 +646,7 @@ function getAncestryLine(person) {
   if(!isYousefiLine(person.id)) return '';
 
   const parentId = person.fatherId || person.motherId;
-  if(!parentId) return '🌱 المؤسس';
+  if(!parentId) return '🌱 الأساس';
 
   const chain = [];
   let cur = people.find(x=>x.id===parentId);
@@ -716,9 +694,9 @@ function openOrderChildren() {
   
   kids.forEach(k => {
     listDiv.innerHTML += `
-      <div class="child-order-row" style="display:flex; gap:10px; align-items:center; margin-bottom:10px; background:#f9f9f9; padding:8px 12px; border-radius:6px; border:1px solid #e0e0e0">
-        <span style="flex:1; color:var(--ink); font-size:0.9rem; font-weight:600;">${getDisplayName(k)}</span>
-        <input type="number" class="child-order-input" data-id="${k.id}" value="${k.order || 0}" style="width:70px; padding:6px; border-radius:4px; text-align:center; border:1px solid #ccc; font-weight:bold;">
+      <div class="child-order-row" style="display:flex; gap:10px; align-items:center; margin-bottom:10px; background:rgba(255,255,255,0.04); padding:8px 12px; border-radius:8px;">
+        <span style="flex:1; color:#f5e8c8; font-size:0.9rem; font-weight:600;">${getDisplayName(k)}</span>
+        <input type="number" class="child-order-input" data-id="${k.id}" value="${k.order || 0}" style="width:70px; padding:6px; border-radius:6px; text-align:center; background:rgba(0,0,0,0.3); color:var(--gold); border:1px solid rgba(201,168,76,0.4); font-weight:bold;">
       </div>
     `;
   });
@@ -756,7 +734,7 @@ async function saveChildrenOrder() {
 }
 
 /* ══════════════════════════════════
-   TREE BUILDER (Top-Down Logic)
+   TREE BUILDER (BOTTOM-UP LOGIC)
 ══════════════════════════════════ */
 function buildTree(focusRootId = null){
   const ch={}, roots=[];
@@ -786,14 +764,14 @@ function buildTree(focusRootId = null){
 
   Object.keys(ch).forEach(k=>ch[k].sort((a,b)=>{
     const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
-    const diff = (pa.order || 0) - (pb.order || 0);
+    const diff = (pb.order || 0) - (pa.order || 0);
     if(diff !== 0) return diff;
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   }));
   
   roots.sort((a,b)=>{
     const pa=people.find(x=>x.id===a), pb=people.find(x=>x.id===b);
-    const diff = (pa.order || 0) - (pb.order || 0);
+    const diff = (pb.order || 0) - (pa.order || 0);
     if(diff !== 0) return diff;
     return((pa && pa.name) || '').localeCompare((pb && pb.name) || '','ar');
   });
@@ -816,17 +794,19 @@ function buildTree(focusRootId = null){
     let cx=x-tw/2;
     c.forEach(cid=>{place(cid,cx+sw[cid]/2,y+NH+VG);cx+=sw[cid]+HG;});
   }
-  
   let off=0;roots.forEach(r=>{place(r,off+sw[r]/2,TP);off+=sw[r]+HG;});
 
-  // Top-Down: No Y-inversion needed for manuscript theme.
-  let mx=0, my=0;
-  Object.values(pos).forEach(({x,y})=>{
-      if(x+NW/2>mx)mx=x+NW/2;
-      if(y+NH>my)my=y+NH;
+  // قلب المحور العمودي لتصبح الشجرة من الأسفل إلى الأعلى (كما هو مطلوب للطبيعة)
+  let maxDepthY = 0;
+  Object.values(pos).forEach(({y}) => { if(y > maxDepthY) maxDepthY = y; });
+  Object.values(pos).forEach(p => { 
+    p.y = maxDepthY - p.y + TP; 
   });
+
+  let mx=0, my=maxDepthY + NH + TP;
+  Object.values(pos).forEach(({x})=>{if(x+NW/2>mx)mx=x+NW/2;});
   
-  return{pos, ch, canvasW:mx+20, canvasH:my+40};
+  return{pos, ch, canvasW:mx+20, canvasH:my+20};
 }
 
 function renderTree(focusRootId = null){
@@ -838,8 +818,8 @@ function renderTree(focusRootId = null){
   if(!people.length){
     canvas.innerHTML=`<svg class="tree-svg" id="treeSvg"></svg>
       <div class="empty-state" style="padding-top:60px">
-        <div class="tree-icon">📜</div>
-        <p>لا توجد أسماء بعد في المخطوطة.<br>اضغط <strong>"+ إضافة فرد وأبنائه"</strong> للبدء.</p>
+        <div class="tree-icon">🌱</div>
+        <p>لا يوجد أفراد بعد.<br>اضغط <strong>"+ إضافة فرد وأبنائه"</strong></p>
       </div>`;
     return;
   }
@@ -852,18 +832,18 @@ function renderTree(focusRootId = null){
     if(collapsedNodes.has(p.id)) return;
 
     const c=ch[p.id]||[];if(!c.length)return;
-    const px=pos[p.id].x, py=pos[p.id].y + NH; // From bottom of parent
+    const px=pos[p.id].x, py=pos[p.id].y; 
     c.forEach(cid=>{
       if(!pos[cid]) return;
-      const cx=pos[cid].x, cy=pos[cid].y; // To top of child
-      const midY = py + VG/2; 
+      const cx=pos[cid].x, cy=pos[cid].y + NH; 
+      const midY = py - VG/2; 
       const path=document.createElementNS('http://www.w3.org/2000/svg','path');
       
-      // خطوط ناعمة وبسيطة بلون حبر باهت
+      // استخدام خط منحني (Cubic Bezier Curve) باللون البني ليحاكي أغصان الشجرة
       path.setAttribute('d',`M${px},${py} C${px},${midY} ${cx},${midY} ${cx},${cy}`);
       path.setAttribute('fill','none');
-      path.setAttribute('stroke','#8d6e63'); 
-      path.setAttribute('stroke-width','2'); 
+      path.setAttribute('stroke','#5D4037'); /* لون بني خشبي */
+      path.setAttribute('stroke-width','4.5'); /* خط سميك كالغصن */
       svg.appendChild(path);
     });
   });
@@ -875,12 +855,9 @@ function renderTree(focusRootId = null){
     wrap.className='node-wrap';wrap.dataset.id=p.id;
     wrap.style.left=x+'px';wrap.style.top=y+'px';
     const gc=p.gender==='male'?'boy':'girl';
-    
-    // إخفاء الصورة في شجرة المخطوطة إلا إذا رغبت بإظهارها (تخفيف زحمة)
-    // أبقيتها صغيرة ومرتبة
     const photoHTML=p.photo
       ?`<img class="node-photo" src="${p.photo}" loading="lazy">`
-      :`<div class="node-photo-placeholder" style="display:none"></div>`; // أخفيت أيقونة الوجه لتكون رسمية أكثر
+      :`<div class="node-photo-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
     
     const isRoot = !(p.fatherId || p.motherId);
     
@@ -889,6 +866,7 @@ function renderTree(focusRootId = null){
     const collapseBtnHTML = hasChildren ? `<button class="collapse-btn" title="${isCollapsed ? 'إظهار الفروع' : 'إخفاء الفروع'}" onclick="event.stopPropagation(); toggleCollapse('${p.id}')">${isCollapsed ? '➕' : '➖'}</button>` : '';
 
     wrap.innerHTML=`
+      ${collapseBtnHTML}
       ${isAdmin?`<div class="node-actions">
         <button class="act-btn act-edit"   onclick="event.stopPropagation();openEdit('${p.id}')">✏️</button>
         <button class="act-btn act-delete" onclick="event.stopPropagation();deletePerson('${p.id}')">🗑</button>
@@ -896,10 +874,8 @@ function renderTree(focusRootId = null){
       <div class="node-card ${gc}" data-id="${p.id}">
         ${photoHTML}
         <div class="node-name">${esc(getDisplayName(p))}</div>
-      </div>
-      ${collapseBtnHTML}
-      `;
-      
+        ${isRoot ? `<div class="node-meta" style="color:#2E7D32">🌱 الأساس</div>` : ''}
+      </div>`;
     wrap.querySelector('.node-card').addEventListener('click',()=>showProfile(p.id));
     if(isAdmin)attachDrag(wrap);
     canvas.appendChild(wrap);
@@ -919,6 +895,7 @@ async function exportTree(rootId = null) {
   showToast('⏳ جاري تجهيز الصورة عالية الدقة، يرجى الانتظار...');
 
   const canvasEl = document.getElementById('treeCanvas');
+  const oldTransform = canvasEl.style.transform;
   const oldScale = mapScale, oldPanX = mapPanX, oldPanY = mapPanY;
 
   renderTree(rootId);
@@ -928,7 +905,7 @@ async function exportTree(rootId = null) {
 
   try {
     const canvas = await html2canvas(canvasEl, {
-      backgroundColor: '#fcf8ee', // لون الورق
+      backgroundColor: '#E0F6FF', // لون سماء فاتح للتصدير
       scale: 2, 
       useCORS: true,
       logging: false
@@ -936,10 +913,10 @@ async function exportTree(rootId = null) {
 
     const link = document.createElement('a');
     const personName = rootId ? (people.find(p=>p.id===rootId)?.name || 'الفرد') : 'العائلة';
-    link.download = `مخطوطة_${personName}.png`;
+    link.download = `شجرة_${personName}.png`;
     link.href = canvas.toDataURL('image/png');
     link.click();
-    showToast('✅ تم حفظ المخطوطة بنجاح!');
+    showToast('✅ تم تحميل الصورة بنجاح!');
   } catch (err) {
     showToast('❌ حدث خطأ أثناء التقاط الصورة');
     console.error(err);
@@ -959,11 +936,11 @@ function showProfile(id){
   const childCount=people.filter(x=>x.fatherId===id||x.motherId===id).length;
   document.getElementById('profileImgWrap').innerHTML=p.photo
     ?`<img class="profile-img" src="${p.photo}" onclick="openLightbox(this.src);event.stopPropagation()" title="اضغط لتكبير الصورة">`
-    :`<div class="profile-placeholder">${p.gender==='male'?'رجل':'امرأة'}</div>`;
+    :`<div class="profile-placeholder">${p.gender==='male'?'👦':'👧'}</div>`;
   document.getElementById('profileName').textContent=getDisplayName(p);
   
   document.getElementById('profileMeta').textContent=getAncestryLine(p);
-  document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء في المنصة: '+childCount:'';
+  document.getElementById('profileMeta2').textContent=childCount?'عدد الأبناء في الشجرة: '+childCount:'';
   
   document.getElementById('orderChildrenBtn').style.display = (isAdmin && childCount > 0) ? 'inline-flex' : 'none';
   document.getElementById('exportSubBtn').style.display = isAdmin ? 'inline-flex' : 'none';
@@ -1028,7 +1005,7 @@ function addChildField() {
   div.className = 'child-row';
   div.innerHTML = `
     <div class="child-photo-wrapper" style="position:relative; width:34px; height:34px; flex-shrink:0; cursor:pointer;" onclick="this.querySelector('input[type=file]').click()" title="إضافة صورة للابن">
-      <div class="child-photo-prev" style="width:100%; height:100%; border-radius:50%; background:#fff; border:1px solid #ccc; display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:.8rem;">📷</div>
+      <div class="child-photo-prev" style="width:100%; height:100%; border-radius:50%; background:rgba(255,255,255,.1); border:1px solid rgba(201,168,76,.4); display:flex; align-items:center; justify-content:center; overflow:hidden; font-size:.8rem;">📷</div>
       <input type="file" accept="image/*" style="display:none" onchange="handleChildPhoto(this)">
       <input type="hidden" class="child-photo-data">
     </div>
@@ -1144,11 +1121,11 @@ async function savePerson(){
        }
     }
 
-    closeModal(); showToast('✅ تم الإضافة للمخطوطة بنجاح');
+    closeModal(); showToast('✅ تم الحفظ والإضافة للشجرة بنجاح');
   }catch(e){
     showToast('❌ خطأ: '+e.message);
   }finally{
-    btn.disabled=false;btn.innerHTML='💾 حفظ في الشجرة';
+    btn.disabled=false;btn.innerHTML='💾 حفظ';
   }
 }
 
@@ -1237,9 +1214,10 @@ function onDragStart(e){
   const t=e.touches?e.touches[0]:e;
   const ghost=document.getElementById('dragGhost');
   
-  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:130px;min-height:50px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;border-radius:8px;box-shadow:0 10px 20px rgba(0,0,0,.15);background:#fff;border:1px solid #d4c4a1"><div class="node-name" style="color:#3e2723">${esc(p.name)}</div></div>`;
+  // مطابقة الـ Ghost لثيم الطبيعة الجديد
+  ghost.innerHTML=`<div class="node-card ${p.gender==='male'?'boy':'girl'}" style="width:120px;min-height:125px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 8px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.4);background:linear-gradient(145deg, #fffcf5, #f5ecd3);border:3px solid #d4c4a1"><div class="node-name" style="color:#3e2723; font-weight:800; font-size:0.85rem">${esc(p.name)}</div></div>`;
   ghost.style.display='block';
-  ghost.style.left=(t.clientX-65)+'px';ghost.style.top=(t.clientY-25)+'px';
+  ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
   wrap.classList.add('dragging');
   dragState={id,wrap,startX:t.clientX,startY:t.clientY,moved:false};
   if(e.touches){
@@ -1256,7 +1234,7 @@ function onDragMove(e){
   const t=e.touches?e.touches[0]:e;
   if(Math.abs(t.clientX-dragState.startX)>5||Math.abs(t.clientY-dragState.startY)>5)dragState.moved=true;
   const ghost=document.getElementById('dragGhost');
-  ghost.style.left=(t.clientX-65)+'px';ghost.style.top=(t.clientY-25)+'px';
+  ghost.style.left=(t.clientX-60)+'px';ghost.style.top=(t.clientY-65)+'px';
   document.querySelectorAll('.drag-target').forEach(el=>el.classList.remove('drag-target'));
   const tgt=getDropTarget(t.clientX,t.clientY,dragState.id);
   if(tgt)tgt.classList.add('drag-target');
@@ -1437,7 +1415,7 @@ const configured = cfg.apiKey && !cfg.apiKey.includes('PASTE');
 
 if(!configured){
   document.getElementById('setupBanner').style.display='block';
-  setStatus('⚠️ Firebase غير مهيأ','error');
+  setStatus('⚠️ Firebase غير مهيأ — اقرأ التعليمات أعلاه','error');
 }
 
 let db, unsubscribe;
@@ -1445,7 +1423,7 @@ if(configured){
   try{
     const app = initializeApp(cfg);
     db = getFirestore(app);
-    setStatus('⏳ جاري إحضار المخطوطة…','connecting');
+    setStatus('⏳ جاري الاتصال بقاعدة البيانات…','connecting');
     startListener();
   }catch(e){
     setStatus('❌ خطأ في الإعداد: '+e.message,'error');
@@ -1458,9 +1436,9 @@ function startListener(){
   unsubscribe = onSnapshot(q,
     snap => {
       people = snap.docs.map(d=>({id:d.id,...d.data()}));
-      setStatus('🟢 متصل — '+people.length+' فرد مسجل','ok');
+      setStatus('🟢 متصل — '+people.length+' فرد','ok');
 
-      // طي الشجرة لإظهار الجد الأكبر وأبنائه المباشرين فقط في البداية
+      // طي جميع الأبناء باستثناء الجد الأكبر عند التحميل الأول
       if(isFirstDataLoad && people.length > 0) {
         collapsedNodes.clear();
         people.forEach(p => {
